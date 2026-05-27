@@ -30,7 +30,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public LoginVO loginVO(@Validated @RequestBody LoginDTO dto) {
-        String userId = authService.login(dto.getUsername(), dto.getPassword());
+        String userId = authService.login(dto.getUserName(), dto.getPassword());
         StpUtil.login(userId);
         SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
         LoginVO vo = new LoginVO();

@@ -5,6 +5,9 @@ import cn.dev33.satoken.exception.NotPermissionException;
 import cn.dev33.satoken.exception.NotRoleException;
 import com.infiext.soybean.domain.Result;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -24,6 +27,38 @@ public class GlobalExceptionHandler {
         log.warn("业务异常：code={}, msg={}", e.getCode(), e.getMessage(), e);
         // 返回自定义错误码和信息，适配统一响应格式
         return Result.error(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 处理参数验证异常（@Valid/@Validated 校验失败）
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Result<Void> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+        // 获取第一个字段错误信息（即最核心的校验失败原因）
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError != null ? fieldError.getDefaultMessage() : "参数校验失败";
+
+        // 打印详细日志（便于排查问题）
+        log.warn("参数验证异常：{}", message, e);
+
+        // 只返回简洁的错误提示（如"用户名不能为空"）
+        return Result.error(400, message);
+    }
+
+    /**
+     * 处理绑定异常（表单数据绑定校验失败）
+     */
+    @ExceptionHandler(BindException.class)
+    public Result<Void> handleBindException(BindException e) {
+        // 获取第一个字段错误信息
+        FieldError fieldError = e.getBindingResult().getFieldError();
+        String message = fieldError != null ? fieldError.getDefaultMessage() : "参数绑定失败";
+
+        // 打印详细日志
+        log.warn("参数绑定异常：{}", message, e);
+
+        // 返回简洁的错误提示
+        return Result.error(400, message);
     }
 
     /**
