@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.infiext.soybean</groupId>
+        <artifactId>soybean-api</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>soybean-api-app</artifactId>
+    <description>应用入口</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-api-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-api-auth</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-api-sys</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>app</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.infiext.soybean.Application</mainClass>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

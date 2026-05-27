@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.infiext.soybean</groupId>
+    <artifactId>soybean-api</artifactId>
+    <description>Soybean后端API</description>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>soybean-api-app</module>
+        <module>soybean-api-core</module>
+        <module>soybean-api-auth</module>
+        <module>soybean-api-sys</module>
+    </modules>
+    <!-- 
+        属性定义区，集中管理项目中使用的各种版本号和编码设置。
+        这些属性可以在整个 POM 文件中通过 ${property.name} 引用。
+    -->
+    <properties>
+        <java.version>21</java.version>
+        <spring-boot-dependencies.version>3.5.8</spring-boot-dependencies.version>
+        <hutool-all.version>5.8.42</hutool-all.version>
+        <sa-token-spring-boot3-starter.version>1.44.0</sa-token-spring-boot3-starter.version>
+        <sa-token-redis-template.version>1.44.0</sa-token-redis-template.version>
+        <mybatis-flex-spring-boot3-starter.version>1.11.4</mybatis-flex-spring-boot3-starter.version>
+        <mybatis-flex-processor.version>1.11.4</mybatis-flex-processor.version>
+        <druid-spring-boot-3-starter.version>1.2.27</druid-spring-boot-3-starter.version>
+        <postgresql.version>42.7.8</postgresql.version>
+        <flyway-core.version>11.18.0</flyway-core.version>
+        <flyway-database-postgresql.version>11.18.0</flyway-database-postgresql.version>
+        <soybean-api.version>1.0.0</soybean-api.version>
+
+        <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-boot-maven-plugin.version>3.5.8</spring-boot-maven-plugin.version>
+    </properties>
+
+    <!-- 
+        依赖管理部分，统一控制子模块所使用依赖的版本。
+        子模块在引入这些依赖时无需指定版本号。
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- 导入 Spring Boot 官方提供的依赖管理BOM -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot-dependencies.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 引入 hutool 工具类库 -->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool-all.version}</version>
+            </dependency>
+
+            <!-- 引入 Sa-Token 权限认证核心启动器 -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-spring-boot3-starter</artifactId>
+                <version>${sa-token-spring-boot3-starter.version}</version>
+            </dependency>
+
+            <!-- 引入 Sa-Token 与 Redis 集成的支持模块 -->
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-redis-template</artifactId>
+                <version>${sa-token-redis-template.version}</version>
+            </dependency>
+
+            <!-- 引入 MyBatis-Flex Spring Boot Starter -->
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+                <version>${mybatis-flex-spring-boot3-starter.version}</version>
+            </dependency>
+
+            <!-- 引入 MyBatis-Flex 注解处理工具，仅编译期有效 -->
+            <dependency>
+                <groupId>com.mybatis-flex</groupId>
+                <artifactId>mybatis-flex-processor</artifactId>
+                <version>${mybatis-flex-processor.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- 引入 Druid Spring Boot Starter，支持数据源监控 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid-spring-boot-3-starter</artifactId>
+                <version>${druid-spring-boot-3-starter.version}</version>
+            </dependency>
+
+            <!-- 引入 PostgreSQL JDBC 驱动 -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+
+            <!-- Flyway核心依赖（适配SpringBoot 3 + PostgreSQL） -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway-core.version}</version>
+            </dependency>
+
+            <!-- Flyway PostgreSQL扩展（可选，增强PostgreSQL兼容性） -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway-database-postgresql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-api-app</artifactId>
+                <version>${soybean-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-api-core</artifactId>
+                <version>${soybean-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-api-auth</artifactId>
+                <version>${soybean-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-api-sys</artifactId>
+                <version>${soybean-api.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 
+        构建相关配置，包括最终打包名称以及使用的 Maven 插件列表。
+    -->
+    <build>
+        <!-- 最终输出的 jar/war 文件名，默认使用 artifactId 命名 -->
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering> <!-- 开启过滤，支持读取pom变量 -->
+            </resource>
+        </resources>
+        <!-- 使用到的 Maven 插件列表 -->
+        <plugins>
+            <!-- 配置 Java 编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <!-- 启用方法参数保留功能，便于反射获取参数名 -->
+                    <parameters>true</parameters>
+                    <!-- 设置源码兼容性级别 -->
+                    <source>${maven.compiler.source}</source>
+                    <!-- 设置目标 JVM 版本 -->
+                    <target>${maven.compiler.target}</target>
+                    <!-- 源文件编码格式 -->
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <!-- 注解处理器路径配置 -->
+                    <annotationProcessorPaths>
+                        <!-- 添加 Lombok 注解处理器 -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </path>
+                        <!-- 添加MyBatis Flex注解处理器 -->
+                        <path>
+                            <groupId>com.mybatis-flex</groupId>
+                            <artifactId>mybatis-flex-processor</artifactId>
+                            <version>${mybatis-flex-processor.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- 配置Spring Boot Maven插件，用于打包可执行jar -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-maven-plugin.version}</version>
+                <configuration>
+                    <!-- 排除某些不需要打入 jar 中的依赖 -->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- 
+        配置远程仓库地址，优先从阿里云镜像下载依赖以提高速度。
+    -->
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <!-- 
+       配置插件仓库地址，同样指向阿里云镜像。
+    -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

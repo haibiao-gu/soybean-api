@@ -1,0 +1,102 @@
+# ========== Spring核心配置 ==========
+spring:
+  application:
+    name: ${APP_NAME} # 应用名称
+  profiles:
+    active: ${PROFILES_ACTIVE} # 运行环境（dev/test/prod）
+  # ========== Redis配置 ==========
+  data:
+    redis:
+      host: ${REDIS_HOST} # Redis主机地址
+      port: ${REDIS_PORT} # Redis端口
+      password: ${REDIS_PASSWORD} # Redis密码
+      database: ${REDIS_DATABASE} # 使用的数据库索引
+      timeout: 10s # 连接超时时间
+      lettuce:
+        pool:
+          max-active: 20 # 最大活跃连接数
+          max-wait: -1 # 获取连接的最大等待时间，-1表示永不
+          max-idle: 10 # 最大空闲连接数
+          min-idle: 0 # 最小空闲连接数
+        cluster:
+          refresh:
+            adaptive: true # 启用自适应集群刷新
+  # ========== 数据库配置 ==========
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource # 数据源类型为 Druid
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DATASOURCE_URL}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    # Druid连接池配置（正确层级：spring -> datasource -> druid）
+    druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      # PostgreSQL验证SQL（固定：SELECT 1）
+      validation-query: SELECT 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: false
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall,slf4j
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/api/druid/*,/api/health/*,/api/swagger/*"
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        allow: 127.0.0.1,localhost
+        login-username: admin
+        login-password: admin123
+        reset-enable: false
+  # ========== Flyway配置 ==========
+  flyway:
+    enabled: ${FLYWAY_ENABLED} # 启用 Flyway
+    encoding: UTF-8 # SQL 脚本编码
+    clean-disabled: ${FLYWAY_CLEAN_DISABLED} # 禁用clean（生产环境必须true，避免误删数据）
+    validate-on-migrate: true # 执行迁移前校验脚本（防止脚本被篡改）
+
+# ========== 应用自定义配置 ==========
+app:
+  version: @project.version@
+
+# ========== 服务器配置 ==========
+server:
+  port: ${SERVER_PORT} # 服务端口
+  servlet:
+    context-path: /api # 上下文路径（可选）
+
+# ========== SA-Token 配置 ==========
+sa-token:
+  # Token前缀
+  token-prefix: Bearer
+  # token名称（默认：satoken）
+  token-name: Authorization
+  # token有效期（默认30分钟，单位：秒）
+  timeout: ${TOKEN_TIMEOUT}
+  # token活跃期（默认15分钟，单位：秒）
+  active-timeout: ${TOKEN_ACTIVE_TIMEOUT}
+  # 是否允许同一账号多地登录（默认false）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token（默认false）
+  is-share: false
+  # token风格（默认uuid，可选：simple-uuid、random-32、random-64、random-128、tik）
+  token-style: tik
+  is-log: ${TOKEN_LOG}
+  
+# ========== 请求排除配置 ==========
+request:
+  exclude:
+    uris:
+      - /health          # 健康检查接口
+      - /swagger/**      # Swagger文档接口
+      - /actuator/**     # SpringBoot监控接口
+      - /test/nolog      # 测试接口（示例）
+      - /druid/**        # Druid监控接口
+    
