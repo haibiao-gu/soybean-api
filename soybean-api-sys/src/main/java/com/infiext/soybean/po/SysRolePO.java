@@ -39,4 +39,9 @@ public class SysRolePO extends BasePO<SysRolePO> {
     @Column(ignore = true)
     @RelationOneToMany(selfField = "id", targetField = "roleId")
     private List<SysRoleMenuPO> menus;
+    
+    @Column(ignore = true)
+    @RelationOneToMany(selfField = "id", targetField = "roleId")
+    private List<SysRolePermissionPO> permissions;
+
 }

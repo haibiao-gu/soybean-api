@@ -5,5 +5,5 @@ import com.infiext.soybean.po.SysRoleMenuPO;
 import java.util.List;
 
 public interface SysRoleMenuService {
-    void resetRoleMenu(String roleId, List<SysRoleMenuPO> roleMenu);
+    void resetRoleMenus(String parentId, List<SysRoleMenuPO> relations);
 }

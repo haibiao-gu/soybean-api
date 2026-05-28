@@ -44,11 +44,12 @@ public class AuthController {
     public UserInfoVO getUserInfo() {
         String userId = StpUtil.getLoginIdAsString();
         SysUserPO po = authService.getUserInfo(userId);
+        List<String> permissions = authService.getPermissionList(userId, null);
         UserInfoVO vo = new UserInfoVO();
-        vo.setUserId(userId);
         vo.setAvatar(po.getUserAvatar());
         vo.setNickname(po.getUserName());
         vo.setPhone(po.getUserPhone());
+        vo.setPermissions(permissions);
         return vo;
     }
 

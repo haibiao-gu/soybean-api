@@ -24,11 +24,11 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
     private SysUserRoleMapper mapper;
 
     @Override
-    public void resetUserRole(String userId, List<SysUserRolePO> userRole) {
-        if (userId == null) return;
+    public void resetUserRole(String parentId, List<SysUserRolePO> relations) {
+        if (parentId == null) return;
         relationResetService.resetRelations(
-                userId,
-                userRole,
+                parentId,
+                relations,
                 new RelationResetHandler<>() {
                     @Override
                     public BaseMapper<SysUserRolePO> getMapper() {
@@ -52,4 +52,5 @@ public class SysUserRoleServiceImpl implements SysUserRoleService {
                 }
         );
     }
+    
 }

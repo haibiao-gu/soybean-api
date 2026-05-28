@@ -24,11 +24,11 @@ public class SysRoleMenuServiceImpl implements SysRoleMenuService {
     private SysRoleMenuMapper mapper;
 
     @Override
-    public void resetRoleMenu(String roleId, List<SysRoleMenuPO> roleMenu) {
-        if (roleId == null) return;
+    public void resetRoleMenus(String parentId, List<SysRoleMenuPO> relations) {
+        if (parentId == null) return;
         relationResetService.resetRelations(
-                roleId,
-                roleMenu,
+                parentId,
+                relations,
                 new RelationResetHandler<>() {
                     @Override
                     public BaseMapper<SysRoleMenuPO> getMapper() {
@@ -52,4 +52,5 @@ public class SysRoleMenuServiceImpl implements SysRoleMenuService {
                 }
         );
     }
+
 }

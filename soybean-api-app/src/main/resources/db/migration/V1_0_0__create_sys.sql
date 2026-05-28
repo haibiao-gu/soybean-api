@@ -101,6 +101,19 @@ COMMENT ON COLUMN sys_menu_query.value IS '参数值';
 COMMENT ON TABLE sys_menu_query IS '菜单路由查询参数';
 
 
+DROP TABLE IF EXISTS sys_menu_permission;
+CREATE TABLE sys_menu_permission
+(
+    menu_id VARCHAR(32) NOT NULL,
+    key     VARCHAR(64) NOT NULL,
+    value   VARCHAR(50)
+);
+COMMENT ON COLUMN sys_menu_permission.menu_id IS '菜单ID';
+COMMENT ON COLUMN sys_menu_permission.key IS '权限';
+COMMENT ON COLUMN sys_menu_permission.value IS '描述';
+COMMENT ON TABLE sys_menu_permission IS '菜单权限';
+
+
 DROP TABLE IF EXISTS sys_role;
 CREATE TABLE sys_role
 (
@@ -140,6 +153,17 @@ COMMENT ON COLUMN sys_role_menu.menu_id IS '菜单ID';
 COMMENT ON TABLE sys_role_menu IS '角色菜单关联表';
 
 
+DROP TABLE IF EXISTS sys_role_permission;
+CREATE TABLE sys_role_permission
+(
+    role_id        VARCHAR(32) NOT NULL,
+    permission_key VARCHAR(64) NOT NULL
+);
+COMMENT ON COLUMN sys_role_permission.role_id IS '角色ID';
+COMMENT ON COLUMN sys_role_permission.permission_key IS '权限';
+COMMENT ON TABLE sys_role_permission IS '角色权限关联表';
+
+
 DROP TABLE IF EXISTS sys_user_role;
 CREATE TABLE sys_user_role
 (
@@ -177,3 +201,34 @@ VALUES ('0', '1'),
        ('0', '2-1'),
        ('0', '2-2'),
        ('0', '2-3');
+
+
+INSERT INTO sys_menu_permission (menu_id, "key", value)
+VALUES ('2-2', 'sys:menu:add', '新增'),
+       ('2-2', 'sys:menu:delete', '删除'),
+       ('2-2', 'sys:menu:edit', '编辑'),
+       ('2-2', 'sys:menu:list', '列表'),
+       ('2-3', 'sys:role:add', '新增'),
+       ('2-3', 'sys:role:delete', '删除'),
+       ('2-3', 'sys:role:edit', '编辑'),
+       ('2-3', 'sys:role:list', '列表'),
+       ('2-1', 'sys:user:add', '新增'),
+       ('2-1', 'sys:user:delete', '删除'),
+       ('2-1', 'sys:user:edit', '编辑'),
+       ('2-1', 'sys:user:list', '列表');
+
+
+INSERT INTO sys_role_permission (role_id, permission_key)
+VALUES ('0', 'sys:menu:add'),
+       ('0', 'sys:menu:delete'),
+       ('0', 'sys:menu:edit'),
+       ('0', 'sys:menu:list'),
+       ('0', 'sys:role:add'),
+       ('0', 'sys:role:delete'),
+       ('0', 'sys:role:edit'),
+       ('0', 'sys:role:list'),
+       ('0', 'sys:user:add'),
+       ('0', 'sys:user:delete'),
+       ('0', 'sys:user:edit'),
+       ('0', 'sys:user:list');
+

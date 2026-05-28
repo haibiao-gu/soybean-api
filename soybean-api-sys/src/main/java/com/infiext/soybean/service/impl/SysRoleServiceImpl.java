@@ -6,6 +6,7 @@ import com.infiext.soybean.mapper.SysRoleMapper;
 import com.infiext.soybean.po.SysRoleMenuPO;
 import com.infiext.soybean.po.SysRolePO;
 import com.infiext.soybean.service.SysRoleMenuService;
+import com.infiext.soybean.service.SysRolePermissionService;
 import com.infiext.soybean.service.SysRoleService;
 import com.infiext.soybean.utils.SortUtil;
 import com.infiext.soybean.validator.sys.role.SysRoleValidationContext;
@@ -31,6 +32,8 @@ public class SysRoleServiceImpl implements SysRoleService {
 
     @Resource
     private SysRoleMenuService sysRoleMenuService;
+    @Resource
+    private SysRolePermissionService sysRolePermissionService;
 
     /**
      * 创建
@@ -40,7 +43,8 @@ public class SysRoleServiceImpl implements SysRoleService {
     public SysRolePO create(SysRolePO po) {
         validator.validateAll(po);
         po.save();
-        sysRoleMenuService.resetRoleMenu(po.getId(), po.getMenus());
+        sysRoleMenuService.resetRoleMenus(po.getId(), po.getMenus());
+        sysRolePermissionService.resetRolePermissions(po.getId(), po.getPermissions());
         return po;
     }
 
@@ -55,7 +59,8 @@ public class SysRoleServiceImpl implements SysRoleService {
         if (!status) {
             throw new BusinessException("修改失败，数据已被他人更新！");
         }
-        sysRoleMenuService.resetRoleMenu(po.getId(), po.getMenus());
+        sysRoleMenuService.resetRoleMenus(po.getId(), po.getMenus());
+        sysRolePermissionService.resetRolePermissions(po.getId(), po.getPermissions());
         return po;
     }
 
@@ -67,7 +72,8 @@ public class SysRoleServiceImpl implements SysRoleService {
     public void deleteByIds(List<String> ids) {
         mapper.deleteBatchByIds(ids);
         for (String id : ids) {
-            sysRoleMenuService.resetRoleMenu(id, new ArrayList<>());
+            sysRoleMenuService.resetRoleMenus(id, new ArrayList<>());
+            sysRolePermissionService.resetRolePermissions(id, new ArrayList<>());
         }
     }
 

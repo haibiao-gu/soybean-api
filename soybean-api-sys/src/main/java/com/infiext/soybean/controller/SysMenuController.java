@@ -1,5 +1,6 @@
 package com.infiext.soybean.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.handler.ParamHandler;
 import com.infiext.soybean.po.SysMenuPO;
@@ -27,6 +28,7 @@ public class SysMenuController {
     /**
      * 创建
      */
+    @SaCheckPermission("sys:menu:add")
     @PostMapping("/create")
     public SysMenuPO create(@Validated @RequestBody SysMenuPO po) {
         return service.create(po);
@@ -35,6 +37,7 @@ public class SysMenuController {
     /**
      * 更新
      */
+    @SaCheckPermission("sys:menu:edit")
     @PostMapping("/update")
     public SysMenuPO update(@Validated @RequestBody SysMenuPO po) {
         return service.update(po);
@@ -43,6 +46,7 @@ public class SysMenuController {
     /**
      * 逻辑删除
      */
+    @SaCheckPermission("sys:menu:delete")
     @PostMapping("/delete")
     public void delete(@RequestBody String[] ids) {
         service.deleteByIds(List.of(ids));
@@ -51,6 +55,7 @@ public class SysMenuController {
     /**
      * 获取
      */
+    @SaCheckPermission("sys:menu:list")
     @PostMapping("/get")
     public SysMenuPO get(@RequestParam String id) {
         return service.getById(id);
@@ -59,6 +64,7 @@ public class SysMenuController {
     /**
      * 获取列表
      */
+    @SaCheckPermission("sys:menu:list")
     @PostMapping("/list")
     public List<SysMenuPO> list(@RequestBody SysMenuPO query,
                                 @RequestParam(required = false) String columnKey,
@@ -70,6 +76,7 @@ public class SysMenuController {
     /**
      * 获取分页
      */
+    @SaCheckPermission("sys:menu:list")
     @PostMapping("/page")
     public Page<SysMenuPO> page(@RequestBody SysMenuPO query,
                                 @RequestParam(defaultValue = "1") Integer pageNumber,

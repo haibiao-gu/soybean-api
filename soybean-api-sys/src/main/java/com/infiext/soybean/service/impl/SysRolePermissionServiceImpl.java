@@ -1,8 +1,8 @@
 package com.infiext.soybean.service.impl;
 
-import com.infiext.soybean.mapper.SysMenuQueryMapper;
-import com.infiext.soybean.po.SysMenuQueryPO;
-import com.infiext.soybean.service.SysMenuQueryService;
+import com.infiext.soybean.mapper.SysRolePermissionMapper;
+import com.infiext.soybean.po.SysRolePermissionPO;
+import com.infiext.soybean.service.SysRolePermissionService;
 import com.infiext.soybean.utils.RelationResetHandler;
 import com.infiext.soybean.utils.RelationResetService;
 import com.mybatisflex.core.BaseMapper;
@@ -13,44 +13,44 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.function.Supplier;
 
-import static com.infiext.soybean.po.table.SysMenuQueryTableDef.SYS_MENU_QUERY;
+import static com.infiext.soybean.po.table.SysRolePermissionTableDef.SYS_ROLE_PERMISSION;
 
 @Service
-public class SysMenuQueryServiceImpl implements SysMenuQueryService {
+public class SysRolePermissionServiceImpl implements SysRolePermissionService {
     @Resource
     private RelationResetService relationResetService;
-    
+
     @Resource
-    private SysMenuQueryMapper mapper;
+    private SysRolePermissionMapper mapper;
 
     @Override
-    public void resetMenuQuery(String parentId, List<SysMenuQueryPO> relations) {
+    public void resetRolePermissions(String parentId, List<SysRolePermissionPO> relations) {
         if (parentId == null) return;
         relationResetService.resetRelations(
                 parentId,
                 relations,
                 new RelationResetHandler<>() {
                     @Override
-                    public BaseMapper<SysMenuQueryPO> getMapper() {
+                    public BaseMapper<SysRolePermissionPO> getMapper() {
                         return mapper;
                     }
 
                     @Override
-                    public Supplier<SysMenuQueryPO> getEntitySupplier() {
-                        return SysMenuQueryPO::create;
+                    public Supplier<SysRolePermissionPO> getEntitySupplier() {
+                        return SysRolePermissionPO::create;
                     }
 
                     @Override
                     public QueryWrapper buildDeleteQuery(String id) {
-                        return new QueryWrapper().where(SYS_MENU_QUERY.MENU_ID.eq(id));
+                        return new QueryWrapper().where(SYS_ROLE_PERMISSION.ROLE_ID.eq(id));
                     }
 
                     @Override
-                    public void setForeignKey(SysMenuQueryPO po, String id) {
-                        po.setMenuId(id);
+                    public void setForeignKey(SysRolePermissionPO po, String id) {
+                        po.setRoleId(id);
                     }
                 }
         );
     }
-
+    
 }

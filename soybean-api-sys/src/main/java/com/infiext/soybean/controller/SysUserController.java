@@ -1,5 +1,6 @@
 package com.infiext.soybean.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.handler.ParamHandler;
 import com.infiext.soybean.po.SysUserPO;
@@ -27,6 +28,7 @@ public class SysUserController {
     /**
      * 创建用户
      */
+    @SaCheckPermission("sys:user:add")
     @PostMapping("/create")
     public SysUserPO create(@Validated @RequestBody SysUserPO po) {
         return service.createSysUser(po);
@@ -35,6 +37,7 @@ public class SysUserController {
     /**
      * 更新用户
      */
+    @SaCheckPermission("sys:user:edit")
     @PostMapping("/update")
     public SysUserPO update(@Validated @RequestBody SysUserPO po) {
         return service.updateSysUser(po);
@@ -43,6 +46,7 @@ public class SysUserController {
     /**
      * 逻辑删除用户
      */
+    @SaCheckPermission("sys:user:delete")
     @PostMapping("/delete")
     public void delete(@RequestBody String[] ids) {
         service.deleteSysUser(List.of(ids));
@@ -51,6 +55,7 @@ public class SysUserController {
     /**
      * 获取用户
      */
+    @SaCheckPermission("sys:user:list")
     @PostMapping("/get")
     public SysUserPO get(@RequestParam String id) {
         return service.getSysUserById(id);
@@ -59,6 +64,7 @@ public class SysUserController {
     /**
      * 获取用户列表
      */
+    @SaCheckPermission("sys:user:list")
     @PostMapping("/list")
     public List<SysUserPO> list(@RequestBody SysUserPO query,
                                 @RequestParam(required = false) String columnKey,
@@ -70,6 +76,7 @@ public class SysUserController {
     /**
      * 获取用户分页
      */
+    @SaCheckPermission("sys:user:list")
     @PostMapping("/page")
     public Page<SysUserPO> page(@RequestBody SysUserPO query,
                                 @RequestParam(defaultValue = "1") Integer pageNumber,

@@ -133,5 +133,9 @@ public class SysMenuPO extends BasePO<SysMenuPO> {
     private List<SysMenuQueryPO> query;
 
     @Column(ignore = true)
+    @RelationOneToMany(selfField = "id", targetField = "menuId")
+    private List<SysMenuPermissionPO> permissions;
+
+    @Column(ignore = true)
     private List<SysMenuPO> children;
 }

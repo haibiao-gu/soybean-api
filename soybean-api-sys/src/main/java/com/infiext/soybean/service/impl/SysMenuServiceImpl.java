@@ -8,6 +8,7 @@ import com.infiext.soybean.enums.StatusEnum;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.mapper.SysMenuMapper;
 import com.infiext.soybean.po.SysMenuPO;
+import com.infiext.soybean.service.SysMenuPermissionService;
 import com.infiext.soybean.service.SysMenuQueryService;
 import com.infiext.soybean.service.SysMenuService;
 import com.infiext.soybean.utils.SortResetService;
@@ -43,6 +44,8 @@ public class SysMenuServiceImpl implements SysMenuService {
 
     @Resource
     private SysMenuQueryService sysMenuQueryService;
+    @Resource
+    private SysMenuPermissionService sysMenuPermissionService;
 
     /**
      * 创建
@@ -57,6 +60,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         }
         po.save();
         sysMenuQueryService.resetMenuQuery(po.getId(), po.getQuery());
+        sysMenuPermissionService.resetMenuPermissions(po.getId(), po.getPermissions());
         updateVersion();
         return po;
     }
@@ -73,6 +77,7 @@ public class SysMenuServiceImpl implements SysMenuService {
             throw new BusinessException("修改失败，数据已被他人更新！");
         }
         sysMenuQueryService.resetMenuQuery(po.getId(), po.getQuery());
+        sysMenuPermissionService.resetMenuPermissions(po.getId(), po.getPermissions());
         updateVersion();
         return po;
     }
@@ -90,6 +95,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         mapper.deleteBatchByIds(ids);
         for (String id : ids) {
             sysMenuQueryService.resetMenuQuery(id, new ArrayList<>());
+            sysMenuPermissionService.resetMenuPermissions(id, new ArrayList<>());
         }
         for (String parentId : parentIds) {
             List<String> list = SysMenuPO.create()

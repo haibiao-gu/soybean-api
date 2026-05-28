@@ -6,6 +6,7 @@ import com.infiext.soybean.enums.StatusEnum;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.mapper.SysUserMapper;
 import com.infiext.soybean.po.SysRolePO;
+import com.infiext.soybean.po.SysRolePermissionPO;
 import com.infiext.soybean.po.SysUserPO;
 import com.infiext.soybean.po.SysUserRolePO;
 import com.infiext.soybean.service.SysUserRoleService;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.infiext.soybean.po.table.SysRolePermissionTableDef.SYS_ROLE_PERMISSION;
 import static com.infiext.soybean.po.table.SysRoleTableDef.SYS_ROLE;
 import static com.infiext.soybean.po.table.SysUserRoleTableDef.SYS_USER_ROLE;
 import static com.infiext.soybean.po.table.SysUserTableDef.SYS_USER;
@@ -171,7 +173,11 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public List<String> getPermissionList(String userId) {
-        return new ArrayList<>();
+        return SysRolePermissionPO.create()
+                .select(distinct(SYS_ROLE_PERMISSION.PERMISSION_KEY))
+                .leftJoin(SYS_USER_ROLE).on(SYS_USER_ROLE.ROLE_ID.eq(SYS_ROLE_PERMISSION.ROLE_ID))
+                .where(SYS_USER_ROLE.USER_ID.eq(userId))
+                .listAs(String.class);
     }
 
     /**
