@@ -15,7 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-core</artifactId>
+            <artifactId>soybean-api-core-web</artifactId>
         </dependency>
 
         <dependency>
@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
+                <version>${spring-boot.version}</version>
                 <executions>
                     <execution>
                         <goals>

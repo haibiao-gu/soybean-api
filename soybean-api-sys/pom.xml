@@ -15,7 +15,12 @@
     <dependencies>
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-core</artifactId>
+            <artifactId>soybean-api-core-data</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-api-core-web</artifactId>
         </dependency>
 
     </dependencies>

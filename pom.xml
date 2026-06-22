@@ -22,23 +22,27 @@
     -->
     <properties>
         <java.version>21</java.version>
-        <spring-boot-dependencies.version>3.5.8</spring-boot-dependencies.version>
-        <hutool-all.version>5.8.42</hutool-all.version>
-        <sa-token-spring-boot3-starter.version>1.44.0</sa-token-spring-boot3-starter.version>
-        <sa-token-redis-template.version>1.44.0</sa-token-redis-template.version>
-        <mybatis-flex-spring-boot3-starter.version>1.11.4</mybatis-flex-spring-boot3-starter.version>
-        <mybatis-flex-processor.version>1.11.4</mybatis-flex-processor.version>
-        <druid-spring-boot-3-starter.version>1.2.27</druid-spring-boot-3-starter.version>
+        <!-- https://mvnrepository.com/ -->
+        <spring-boot.version>3.5.15</spring-boot.version>
+        <!-- https://doc.hutool.cn/ -->
+        <hutool.version>5.8.40</hutool.version>
+        <!-- https://sa-token.cc/ -->
+        <sa-token.version>1.45.0</sa-token.version>
+        <!-- https://mybatis-flex.com/ -->
+        <mybatis-flex.version>1.11.7</mybatis-flex.version>
+        <!-- https://github.com/alibaba/druid -->
+        <druid.version>1.2.28</druid.version>
+
+        <flyway.version>12.6.2</flyway.version>
+
         <postgresql.version>42.7.8</postgresql.version>
-        <flyway-core.version>11.18.0</flyway-core.version>
-        <flyway-database-postgresql.version>11.18.0</flyway-database-postgresql.version>
+
         <soybean-api.version>1.0.0</soybean-api.version>
 
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-boot-maven-plugin.version>3.5.8</spring-boot-maven-plugin.version>
     </properties>
 
     <!-- 
@@ -51,7 +55,7 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot-dependencies.version}</version>
+                <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -60,35 +64,35 @@
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
-                <version>${hutool-all.version}</version>
+                <version>${hutool.version}</version>
             </dependency>
 
             <!-- 引入 Sa-Token 权限认证核心启动器 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-spring-boot3-starter</artifactId>
-                <version>${sa-token-spring-boot3-starter.version}</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- 引入 Sa-Token 与 Redis 集成的支持模块 -->
             <dependency>
                 <groupId>cn.dev33</groupId>
                 <artifactId>sa-token-redis-template</artifactId>
-                <version>${sa-token-redis-template.version}</version>
+                <version>${sa-token.version}</version>
             </dependency>
 
             <!-- 引入 MyBatis-Flex Spring Boot Starter -->
             <dependency>
                 <groupId>com.mybatis-flex</groupId>
                 <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
-                <version>${mybatis-flex-spring-boot3-starter.version}</version>
+                <version>${mybatis-flex.version}</version>
             </dependency>
 
             <!-- 引入 MyBatis-Flex 注解处理工具，仅编译期有效 -->
             <dependency>
                 <groupId>com.mybatis-flex</groupId>
                 <artifactId>mybatis-flex-processor</artifactId>
-                <version>${mybatis-flex-processor.version}</version>
+                <version>${mybatis-flex.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -96,7 +100,21 @@
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>druid-spring-boot-3-starter</artifactId>
-                <version>${druid-spring-boot-3-starter.version}</version>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <!-- Flyway核心依赖（适配SpringBoot 3 + PostgreSQL） -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+
+            <!-- Flyway PostgreSQL扩展（可选，增强PostgreSQL兼容性） -->
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
             </dependency>
 
             <!-- 引入 PostgreSQL JDBC 驱动 -->
@@ -104,20 +122,6 @@
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>${postgresql.version}</version>
-            </dependency>
-
-            <!-- Flyway核心依赖（适配SpringBoot 3 + PostgreSQL） -->
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-core</artifactId>
-                <version>${flyway-core.version}</version>
-            </dependency>
-
-            <!-- Flyway PostgreSQL扩展（可选，增强PostgreSQL兼容性） -->
-            <dependency>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-database-postgresql</artifactId>
-                <version>${flyway-database-postgresql.version}</version>
             </dependency>
 
             <dependency>
@@ -128,7 +132,19 @@
 
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
-                <artifactId>soybean-api-core</artifactId>
+                <artifactId>soybean-api-core-common</artifactId>
+                <version>${soybean-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-api-core-data</artifactId>
+                <version>${soybean-api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-api-core-web</artifactId>
                 <version>${soybean-api.version}</version>
             </dependency>
 
@@ -186,7 +202,7 @@
                         <path>
                             <groupId>com.mybatis-flex</groupId>
                             <artifactId>mybatis-flex-processor</artifactId>
-                            <version>${mybatis-flex-processor.version}</version>
+                            <version>${mybatis-flex.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -196,7 +212,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-maven-plugin.version}</version>
+                <version>${spring-boot.version}</version>
                 <configuration>
                     <!-- 排除某些不需要打入 jar 中的依赖 -->
                     <excludes>
