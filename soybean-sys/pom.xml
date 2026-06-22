@@ -5,27 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.infiext.soybean</groupId>
-        <artifactId>soybean-api</artifactId>
+        <artifactId>soybean</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>soybean-api-auth</artifactId>
-    <description>权限模块</description>
+    <artifactId>soybean-sys</artifactId>
+    <description>系统模块</description>
 
     <dependencies>
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-core-common</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-core-web</artifactId>
+            <artifactId>soybean-core-data</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-sys</artifactId>
+            <artifactId>soybean-core-web</artifactId>
         </dependency>
 
     </dependencies>

@@ -5,27 +5,27 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.infiext.soybean</groupId>
-        <artifactId>soybean-api</artifactId>
+        <artifactId>soybean</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>soybean-api-app</artifactId>
+    <artifactId>soybean-app</artifactId>
     <description>应用入口</description>
 
     <dependencies>
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-core-web</artifactId>
+            <artifactId>soybean-core-web</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-auth</artifactId>
+            <artifactId>soybean-auth</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-api-sys</artifactId>
+            <artifactId>soybean-sys</artifactId>
         </dependency>
 
     </dependencies>

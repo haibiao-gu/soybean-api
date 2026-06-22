@@ -5,22 +5,28 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.infiext.soybean</groupId>
-        <artifactId>soybean-api-core</artifactId>
+        <artifactId>soybean</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>soybean-api-core-common</artifactId>
-    <description>核心通用模块</description>
+    <artifactId>soybean-auth</artifactId>
+    <description>权限模块</description>
 
     <dependencies>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-core-common</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-core-web</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.mybatis-flex</groupId>
-            <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-sys</artifactId>
         </dependency>
+
     </dependencies>
 </project>
