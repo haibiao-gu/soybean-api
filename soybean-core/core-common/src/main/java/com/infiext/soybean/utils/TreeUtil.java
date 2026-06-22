@@ -1,7 +1,7 @@
 package com.infiext.soybean.utils;
 
-import io.micrometer.common.util.StringUtils;
-import org.springframework.util.CollectionUtils;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class TreeUtil {
      * @return {@link List}<{@link T}>
      */
     public static <T> List<T> buildTreeByRecursion(List<T> list, String idName, String parentIdName, String childrenName) {
-        if (StringUtils.isBlank(idName) || StringUtils.isBlank(parentIdName) || StringUtils.isBlank(childrenName)) {
+        if (StrUtil.isBlank(idName) || StrUtil.isBlank(parentIdName) || StrUtil.isBlank(childrenName)) {
             return new ArrayList<>();
         }
         List<T> returnList = new ArrayList<>();
@@ -126,7 +126,7 @@ public class TreeUtil {
      * @return {@link List}<{@link T}>
      */
     public static <T> List<T> buildTreeByMap(List<T> list, String idName, String parentIdName, String childrenName, String topParentIdVal) {
-        if (StringUtils.isBlank(idName) || StringUtils.isBlank(parentIdName) || StringUtils.isBlank(childrenName)) {
+        if (StrUtil.isBlank(idName) || StrUtil.isBlank(parentIdName) || StrUtil.isBlank(childrenName)) {
             return new ArrayList<>();
         }
         //根据parentId进行分组
@@ -192,7 +192,7 @@ public class TreeUtil {
             for (T child : list) {
                 if (getFieldValue(child, parentIdName).equals(getFieldValue(node, idName))) {
                     List<T> childrenList = (List<T>) getFieldValue(node, childrenName);
-                    if (CollectionUtils.isEmpty(childrenList)) {
+                    if (CollUtil.isEmpty(childrenList)) {
                         childrenList = new ArrayList<>();
                         setFieldValue(node, childrenList, childrenName);
                     }

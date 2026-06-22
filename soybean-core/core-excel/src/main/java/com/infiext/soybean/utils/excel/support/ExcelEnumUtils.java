@@ -3,6 +3,7 @@ package com.infiext.soybean.utils.excel.support;
 import com.infiext.soybean.utils.excel.annotation.ExcelEnum;
 import com.mybatisflex.annotation.EnumValue;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
@@ -20,6 +21,8 @@ import java.util.LinkedHashMap;
  * @since 1.0
  */
 public class ExcelEnumUtils {
+    private static final String LEGACY_EXCEL_ENUM_ANNOTATION =
+            "com.infiext.soybean.enums.annotation.ExcelEnum";
 
     /**
      * 从枚举类中智能提取映射关系
@@ -88,7 +91,7 @@ public class ExcelEnumUtils {
 
         // 第二步：查找 @ExcelEnum 注解标记的字段（desc）
         for (Field field : fields) {
-            if (field.isAnnotationPresent(ExcelEnum.class)) {
+            if (field.isAnnotationPresent(ExcelEnum.class) || hasLegacyExcelEnumAnnotation(field)) {
                 descField = field;
                 break;
             }
@@ -126,6 +129,15 @@ public class ExcelEnumUtils {
             }
         }
         return null;
+    }
+
+    private static boolean hasLegacyExcelEnumAnnotation(Field field) {
+        for (Annotation annotation : field.getDeclaredAnnotations()) {
+            if (LEGACY_EXCEL_ENUM_ANNOTATION.equals(annotation.annotationType().getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
