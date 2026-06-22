@@ -5,11 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infiext.soybean.config.LogExcludeConfig;
 import com.infiext.soybean.utils.IpUtil;
 import com.infiext.soybean.utils.UriMatchUtils;
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,32 +31,87 @@ import java.util.regex.Pattern;
 @Order(1) // 保证过滤器优先执行
 public class LogFilter implements Filter {
     private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
-    // 注入排除 URI 配置
-    private final LogExcludeConfig logExcludeConfig;
+    /**
+     * 常见的文件导出 Content-Type 前缀
+     */
+    private static final String[] FILE_CONTENT_TYPES = {
+            "application/vnd.openxmlformats-officedocument",
+            "application/vnd.ms-excel",
+            "application/pdf",
+            "application/octet-stream",
+            "application/zip",
+            "image/",
+            "video/",
+            "audio/"
+    };
     private final ObjectMapper objectMapper;
+    private final LogExcludeConfig logExcludeConfig;
 
     // 构造器注入
-    public LogFilter(LogExcludeConfig logExcludeConfig, ObjectMapper objectMapper) {
-        this.logExcludeConfig = logExcludeConfig;
+    public LogFilter(ObjectMapper objectMapper, LogExcludeConfig logExcludeConfig) {
         this.objectMapper = objectMapper;
+        this.logExcludeConfig = logExcludeConfig;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+        String contentType = httpRequest.getContentType();
 
-        // ========== 核心：判断是否排除当前URI ==========
         if (UriMatchUtils.isExcludeUri(httpRequest, logExcludeConfig.getUris())) {
-            // 排除的URI：直接放行，不记录日志
             chain.doFilter(request, response);
             return;
         }
 
-        // 包装请求/响应
-        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request);
+        boolean isMultipart = contentType != null && contentType.toLowerCase().startsWith("multipart/");
+
+        if (isMultipart) {
+            long startTime = System.currentTimeMillis();
+            String requestUrl = httpRequest.getRequestURL().toString();
+            String method = httpRequest.getMethod();
+            String clientIp = IpUtil.getClientIp(httpRequest);
+            Map<String, String> headers = getRequestHeaders(httpRequest);
+            String queryString = httpRequest.getQueryString();
+
+            try {
+                chain.doFilter(request, response);
+            } catch (Exception e) {
+                log.error("文件上传处理失败: {}", e.getMessage());
+                throw e;
+            }
+
+            int statusCode = ((HttpServletResponse) response).getStatus();
+            long costTime = System.currentTimeMillis() - startTime;
+
+            String logContent = """
+                    
+                    ============ 请求/响应日志 ============
+                    请求URL: %s
+                    请求方法: %s
+                    客户端IP: %s
+                    请求头: %s
+                    GET参数: %s
+                    POST请求体: [文件上传请求，跳过日志记录]
+                    响应状态码: %d
+                    响应体: [文件上传响应]
+                    请求耗时: %dms
+                    ====================================
+                    """.formatted(
+                    requestUrl,
+                    method,
+                    clientIp,
+                    headers,
+                    (queryString == null ? "无" : queryString),
+                    statusCode,
+                    costTime
+            );
+            log.info(logContent);
+            return;
+        }
+
+        ContentCachingRequestWrapper requestWrapper = new ContentCachingRequestWrapper((HttpServletRequest) request, Integer.MAX_VALUE);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse) response);
 
-        // 记录请求开始时间 & 获取基础请求信息
         long startTime = System.currentTimeMillis();
         String requestUrl = httpRequest.getRequestURL().toString();
         String method = httpRequest.getMethod();
@@ -68,16 +119,19 @@ public class LogFilter implements Filter {
         Map<String, String> headers = getRequestHeaders(httpRequest);
         String queryString = httpRequest.getQueryString();
 
-        // 执行后续过滤器/Controller
         chain.doFilter(requestWrapper, responseWrapper);
 
         String requestBody = getRequestBody(requestWrapper);
         String singleLineBody = formatSingleLineBody(requestBody);
 
-        // 获取响应信息
         int statusCode = responseWrapper.getStatus();
-        String responseBody = getResponseBody(responseWrapper);
         long costTime = System.currentTimeMillis() - startTime;
+
+        // 判断是否为文件传输
+        boolean isFileTransfer = isFileTransfer(httpRequest, responseWrapper);
+        String responseBody = isFileTransfer ?
+                "[文件传输] Content-Type: " + responseWrapper.getContentType() + ", Size: " + responseWrapper.getContentAsByteArray().length + " bytes" :
+                getResponseBody(responseWrapper);
 
         // ========== 拼接日志 ==========
         String logContent = """
@@ -106,7 +160,6 @@ public class LogFilter implements Filter {
         );
         log.info(logContent);
 
-        // 写回响应体
         responseWrapper.copyBodyToResponse();
     }
 
@@ -173,4 +226,29 @@ public class LogFilter implements Filter {
         }
         return headers;
     }
+
+    /**
+     * 判断当前请求是否为文件传输
+     *
+     * @param request  HTTP 请求对象
+     * @param response 缓存响应包装器
+     * @return true 表示是文件传输，false 表示普通请求
+     */
+    private boolean isFileTransfer(HttpServletRequest request, ContentCachingResponseWrapper response) {
+        String uri = request.getRequestURI().toLowerCase();
+        String contentType = response.getContentType();
+
+        // 检查 Content-Type 是否为文件类型
+        if (contentType != null) {
+            String lowerContentType = contentType.toLowerCase();
+            for (String filePrefix : FILE_CONTENT_TYPES) {
+                if (lowerContentType.startsWith(filePrefix)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }

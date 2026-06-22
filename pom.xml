@@ -37,6 +37,8 @@
 
         <postgresql.version>42.7.8</postgresql.version>
 
+        <poi.version>5.5.1</poi.version>
+        
         <soybean.version>1.0.0</soybean.version>
 
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
@@ -117,6 +119,12 @@
                 <version>${flyway.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
             <!-- 引入 PostgreSQL JDBC 驱动 -->
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -145,6 +153,12 @@
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
                 <artifactId>soybean-core-web</artifactId>
+                <version>${soybean.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-core-excel</artifactId>
                 <version>${soybean.version}</version>
             </dependency>
 

@@ -17,5 +17,6 @@
         <module>core-common</module>
         <module>core-data</module>
         <module>core-web</module>
+        <module>core-excel</module>
     </modules>
 </project>
