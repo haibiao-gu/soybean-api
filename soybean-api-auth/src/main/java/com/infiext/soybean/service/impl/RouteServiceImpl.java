@@ -1,7 +1,5 @@
 package com.infiext.soybean.service.impl;
 
-import com.infiext.soybean.dto.RouteDTO;
-import com.infiext.soybean.dto.UserRoleDTO;
 import com.infiext.soybean.enums.StatusEnum;
 import com.infiext.soybean.enums.YesOrNoEnum;
 import com.infiext.soybean.po.SysMenuPO;
@@ -10,6 +8,8 @@ import com.infiext.soybean.service.SysMenuService;
 import com.infiext.soybean.service.SysRoleService;
 import com.infiext.soybean.service.SysUserService;
 import com.infiext.soybean.utils.TreeUtil;
+import com.infiext.soybean.vo.RouteVO;
+import com.infiext.soybean.vo.UserRoleVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +35,10 @@ public class RouteServiceImpl implements RouteService {
      * @return 常量路由
      */
     @Override
-    public List<RouteDTO> getConstantRoutes() {
+    public List<RouteVO> getConstantRoutes() {
         SysMenuPO query = SysMenuPO.create().setConstant(YesOrNoEnum.Y).setStatus(StatusEnum.ENABLED);
         List<SysMenuPO> list = sysMenuService.getList(query, null);
-        List<RouteDTO> routes = convertToRoute(list);
+        List<RouteVO> routes = convertToRoute(list);
         routes.add(getLoginPage());
         return routes;
     }
@@ -49,7 +49,7 @@ public class RouteServiceImpl implements RouteService {
      * @return 用户路由
      */
     @Override
-    public UserRoleDTO getUserRoutes(String userId) {
+    public UserRoleVO getUserRoutes(String userId) {
         // 获取用户角色ID
         List<String> roleIds = sysUserService.getUserRoleIds(userId);
         // 获取角色菜单ID
@@ -67,11 +67,11 @@ public class RouteServiceImpl implements RouteService {
             pushMenu(userMenus, menuId);
         }
 
-        List<RouteDTO> routes = convertToRoute(userMenus);
+        List<RouteVO> routes = convertToRoute(userMenus);
 
         String home = findFistPage(routes);
 
-        UserRoleDTO res = new UserRoleDTO();
+        UserRoleVO res = new UserRoleVO();
         res.setHome(home);
         res.setRoutes(routes);
         return res;
@@ -97,13 +97,13 @@ public class RouteServiceImpl implements RouteService {
      *
      * @return 登录页面
      */
-    private RouteDTO getLoginPage() {
-        RouteDTO route = new RouteDTO();
+    private RouteVO getLoginPage() {
+        RouteVO route = new RouteVO();
         route.setName("login");
         route.setPath("/login/:module(pwd-login|code-login|register|reset-pwd|bind-wechat)?");
         route.setComponent("layout.blank$view.login");
 
-        RouteDTO.Meta meta = new RouteDTO.Meta();
+        RouteVO.Meta meta = new RouteVO.Meta();
         meta.setTitle("login");
         meta.setI18nKey("登录");
         meta.setConstant(true);
@@ -118,8 +118,8 @@ public class RouteServiceImpl implements RouteService {
      * @param routes 路由列表
      * @return 第一个页面
      */
-    private String findFistPage(List<RouteDTO> routes) {
-        for (RouteDTO route : routes) {
+    private String findFistPage(List<RouteVO> routes) {
+        for (RouteVO route : routes) {
             if (route.getChildren() != null && !route.getChildren().isEmpty()) {
                 return findFistPage(route.getChildren());
             } else {
@@ -129,7 +129,7 @@ public class RouteServiceImpl implements RouteService {
         return null;
     }
 
-    private List<RouteDTO> convertToRoute(List<SysMenuPO> menuList) {
+    private List<RouteVO> convertToRoute(List<SysMenuPO> menuList) {
         List<SysMenuPO> sortedMenuList = menuList.stream()
                 .sorted((m1, m2) -> {
                     Integer order1 = m1.getSortOrder() != null ? m1.getSortOrder() : Integer.MAX_VALUE;
@@ -138,9 +138,9 @@ public class RouteServiceImpl implements RouteService {
                 })
                 .toList();
 
-        List<RouteDTO> routeList = sortedMenuList.stream()
+        List<RouteVO> routeList = sortedMenuList.stream()
                 .map(menu -> {
-                    RouteDTO route = new RouteDTO();
+                    RouteVO route = new RouteVO();
                     route.setId(menu.getId());
                     route.setParentId(menu.getParentId());
                     route.setName(menu.getRouteName());
@@ -153,8 +153,8 @@ public class RouteServiceImpl implements RouteService {
         return TreeUtil.buildTreeByMap(routeList);
     }
 
-    private RouteDTO.Meta convertToMeta(SysMenuPO menu) {
-        RouteDTO.Meta meta = new RouteDTO.Meta();
+    private RouteVO.Meta convertToMeta(SysMenuPO menu) {
+        RouteVO.Meta meta = new RouteVO.Meta();
         meta.setTitle(menu.getMenuName());
         meta.setIcon(menu.getIcon());
         meta.setIconType(menu.getIconType());

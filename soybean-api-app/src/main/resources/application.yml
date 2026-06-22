@@ -1,3 +1,17 @@
+# ========== 应用自定义配置 ==========
+app:
+  version: @project.version@
+  default-password: ${DEFAULT_PASSWORD}
+  default-upload-store: ${DEFAULT_UPLOAD_STORE}
+  default-bucket-name: ${DEFAULT_BUCKET_NAME}
+  supplier-role-code: ${SUPPLIER_ROLE_CODE}
+
+# ========== 服务器配置 ==========
+server:
+  port: ${SERVER_PORT} # 服务端口
+  servlet:
+    context-path: /api # 上下文路径（可选）
+
 # ========== Spring核心配置 ==========
 spring:
   application:
@@ -61,16 +75,6 @@ spring:
     encoding: UTF-8 # SQL 脚本编码
     clean-disabled: ${FLYWAY_CLEAN_DISABLED} # 禁用clean（生产环境必须true，避免误删数据）
     validate-on-migrate: true # 执行迁移前校验脚本（防止脚本被篡改）
-
-# ========== 应用自定义配置 ==========
-app:
-  version: @project.version@
-
-# ========== 服务器配置 ==========
-server:
-  port: ${SERVER_PORT} # 服务端口
-  servlet:
-    context-path: /api # 上下文路径（可选）
 
 # ========== SA-Token 配置 ==========
 sa-token:

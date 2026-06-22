@@ -1,18 +1,18 @@
-package com.infiext.soybean.dto;
+package com.infiext.soybean.vo;
 
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class RouteDTO {
+public class RouteVO {
     private String id;
     private String parentId;
     private String name;
     private String path;
     private String component;
     private Meta meta;
-    private List<RouteDTO> children;
+    private List<RouteVO> children;
 
     @Data
     public static class Meta {

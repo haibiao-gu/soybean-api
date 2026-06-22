@@ -1,12 +1,12 @@
 package com.infiext.soybean.service;
 
-import com.infiext.soybean.dto.RouteDTO;
-import com.infiext.soybean.dto.UserRoleDTO;
+import com.infiext.soybean.vo.RouteVO;
+import com.infiext.soybean.vo.UserRoleVO;
 
 import java.util.List;
 
 public interface RouteService {
-    List<RouteDTO> getConstantRoutes();
+    List<RouteVO> getConstantRoutes();
 
-    UserRoleDTO getUserRoutes(String userId);
+    UserRoleVO getUserRoutes(String userId);
 }
