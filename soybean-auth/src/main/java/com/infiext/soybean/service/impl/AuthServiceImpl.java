@@ -61,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public SysUserPO getUserInfo(String userId) {
-        return sysUserService.getSysUserById(userId);
+        return sysUserService.getById(userId);
     }
 
 
@@ -74,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
      */
     @Override
     public void changePassword(String userId, String oldPassword, String newPassword) {
-        SysUserPO sysUser = sysUserService.getSysUserById(userId);
+        SysUserPO sysUser = sysUserService.getById(userId);
         if (sysUser == null || !Objects.equals(sysUser.getPassword(), MD5.create().digestHex16(oldPassword))) {
             throw new BusinessException("原密码错误！");
         }

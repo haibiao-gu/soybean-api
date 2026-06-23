@@ -12,6 +12,9 @@ public interface SysRoleService {
     SysRolePO create(SysRolePO po);
 
     @Transactional
+    void createBatch(List<SysRolePO> list);
+
+    @Transactional
     SysRolePO update(SysRolePO po);
 
     @Transactional

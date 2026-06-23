@@ -66,6 +66,15 @@ public class SysMenuServiceImpl implements SysMenuService {
     }
 
     /**
+     * 批量创建
+     */
+    @Transactional
+    @Override
+    public void createBatch(List<SysMenuPO> list) {
+        list.forEach(this::create);
+    }
+
+    /**
      * 更新
      */
     @Transactional
@@ -231,7 +240,7 @@ public class SysMenuServiceImpl implements SysMenuService {
         List<SysMenuPO> list = SysMenuPO.create()
                 .select(SYS_MENU.DEFAULT_COLUMNS)
                 .orderBy(SYS_MENU.SORT_ORDER.asc())
-                .list();
+                .withRelations().list();
 
         return buildTree(list, "0");
     }

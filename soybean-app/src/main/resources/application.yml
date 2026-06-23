@@ -1,10 +1,10 @@
 # ========== 应用自定义配置 ==========
 app:
   version: @project.version@
-  default-password: ${DEFAULT_PASSWORD}
-  default-upload-store: ${DEFAULT_UPLOAD_STORE}
-  default-bucket-name: ${DEFAULT_BUCKET_NAME}
-  supplier-role-code: ${SUPPLIER_ROLE_CODE}
+  default:
+    password: ${DEFAULT_PASSWORD}
+    upload-store: ${DEFAULT_UPLOAD_STORE}
+    bucket-name: ${DEFAULT_BUCKET_NAME}
 
 # ========== 服务器配置 ==========
 server:

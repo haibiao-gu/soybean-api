@@ -1,5 +1,6 @@
 package com.infiext.soybean.po;
 
+import com.infiext.soybean.utils.excel.annotation.ExcelField;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
 import com.mybatisflex.core.activerecord.Model;
@@ -19,12 +20,14 @@ public class SysRolePermissionPO extends Model<SysRolePermissionPO> {
      * 角色ID
      */
     @Column(value = "role_id")
+    @ExcelField(value = "角色ID", unique = false, sort = 0, required = true, maxLength = 32)
     private String roleId;
 
     /**
      * 权限
      */
     @Column(value = "permission_key")
+    @ExcelField(value = "权限", unique = false, sort = 1, required = true, maxLength = 64)
     private String permissionKey;
 
 }

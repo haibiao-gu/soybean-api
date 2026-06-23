@@ -5,15 +5,14 @@ import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.handler.ParamHandler;
 import com.infiext.soybean.po.SysMenuPO;
 import com.infiext.soybean.service.SysMenuService;
+import com.infiext.soybean.utils.excel.ExcelUtils;
 import com.mybatisflex.core.paginate.Page;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -86,6 +85,30 @@ public class SysMenuController {
         Page<SysMenuPO> page = ParamHandler.buildPage(pageNumber, pageSize);
         SortParam sort = ParamHandler.buildSortParam(columnKey, order);
         return service.getPage(query, page, sort);
+    }
+
+    /**
+     * 导出
+     */
+    @SaCheckPermission("sys:menu:export")
+    @PostMapping("/export")
+    public void export(@RequestBody SysMenuPO query,
+                       @RequestParam(required = false) String columnKey,
+                       @RequestParam(required = false) String order,
+                       HttpServletResponse response) {
+        SortParam sort = ParamHandler.buildSortParam(columnKey, order);
+        List<SysMenuPO> list = service.getList(query, sort);
+        ExcelUtils.export(response, "系统菜单", list, SysMenuPO.class);
+    }
+
+    /**
+     * 导入
+     */
+    @SaCheckPermission("sys:menu:import")
+    @PostMapping("/import")
+    public void importData(@RequestParam("file") MultipartFile file) throws Exception {
+        List<SysMenuPO> pos = ExcelUtils.readMultipartFile(file, SysMenuPO.class);
+        service.createBatch(pos);
     }
 
     /**

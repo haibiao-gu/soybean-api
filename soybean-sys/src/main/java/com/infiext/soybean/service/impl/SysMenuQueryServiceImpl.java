@@ -19,7 +19,7 @@ import static com.infiext.soybean.po.table.SysMenuQueryTableDef.SYS_MENU_QUERY;
 public class SysMenuQueryServiceImpl implements SysMenuQueryService {
     @Resource
     private RelationResetService relationResetService;
-    
+
     @Resource
     private SysMenuQueryMapper mapper;
 

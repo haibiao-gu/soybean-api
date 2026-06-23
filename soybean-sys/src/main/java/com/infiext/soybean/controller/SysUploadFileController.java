@@ -3,8 +3,8 @@ package com.infiext.soybean.controller;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.handler.ParamHandler;
-import com.infiext.soybean.po.SysRolePO;
-import com.infiext.soybean.service.SysRoleService;
+import com.infiext.soybean.po.SysUploadFilePO;
+import com.infiext.soybean.service.SysUploadFileService;
 import com.infiext.soybean.utils.excel.ExcelUtils;
 import com.mybatisflex.core.paginate.Page;
 import jakarta.annotation.Resource;
@@ -19,33 +19,33 @@ import java.util.List;
 @Slf4j
 @Validated
 @RestController
-@RequestMapping("/sys/role")
-public class SysRoleController {
+@RequestMapping("/sys/upload/file")
+public class SysUploadFileController {
     @Resource
-    private SysRoleService service;
+    private SysUploadFileService service;
 
     /**
      * 创建
      */
-    @SaCheckPermission("sys:role:add")
+    @SaCheckPermission("sys:upload:file:add")
     @PostMapping("/create")
-    public SysRolePO create(@Validated @RequestBody SysRolePO po) {
+    public SysUploadFilePO create(@Validated @RequestBody SysUploadFilePO po) {
         return service.create(po);
     }
 
     /**
      * 更新
      */
-    @SaCheckPermission("sys:role:edit")
+    @SaCheckPermission("sys:upload:file:edit")
     @PostMapping("/update")
-    public SysRolePO update(@Validated @RequestBody SysRolePO po) {
+    public SysUploadFilePO update(@Validated @RequestBody SysUploadFilePO po) {
         return service.update(po);
     }
 
     /**
      * 逻辑删除
      */
-    @SaCheckPermission("sys:role:delete")
+    @SaCheckPermission("sys:upload:file:delete")
     @PostMapping("/delete")
     public void delete(@RequestBody String[] ids) {
         service.deleteByIds(List.of(ids));
@@ -54,20 +54,20 @@ public class SysRoleController {
     /**
      * 获取
      */
-    @SaCheckPermission("sys:role:list")
+    @SaCheckPermission("sys:upload:file:list")
     @PostMapping("/get")
-    public SysRolePO get(@RequestParam String id) {
+    public SysUploadFilePO get(@RequestParam String id) {
         return service.getById(id);
     }
 
     /**
      * 获取列表
      */
-    @SaCheckPermission("sys:role:list")
+    @SaCheckPermission("sys:upload:file:list")
     @PostMapping("/list")
-    public List<SysRolePO> list(@RequestBody SysRolePO query,
-                                @RequestParam(required = false) String columnKey,
-                                @RequestParam(required = false) String order) {
+    public List<SysUploadFilePO> list(@RequestBody SysUploadFilePO query,
+                                      @RequestParam(required = false) String columnKey,
+                                      @RequestParam(required = false) String order) {
         SortParam sort = ParamHandler.buildSortParam(columnKey, order);
         return service.getList(query, sort);
     }
@@ -75,14 +75,14 @@ public class SysRoleController {
     /**
      * 获取分页
      */
-    @SaCheckPermission("sys:role:list")
+    @SaCheckPermission("sys:upload:file:list")
     @PostMapping("/page")
-    public Page<SysRolePO> page(@RequestBody SysRolePO query,
-                                @RequestParam(defaultValue = "1") Integer pageNumber,
-                                @RequestParam(defaultValue = "10") Integer pageSize,
-                                @RequestParam(required = false) String columnKey,
-                                @RequestParam(required = false) String order) {
-        Page<SysRolePO> page = ParamHandler.buildPage(pageNumber, pageSize);
+    public Page<SysUploadFilePO> page(@RequestBody SysUploadFilePO query,
+                                      @RequestParam(defaultValue = "1") Integer pageNumber,
+                                      @RequestParam(defaultValue = "10") Integer pageSize,
+                                      @RequestParam(required = false) String columnKey,
+                                      @RequestParam(required = false) String order) {
+        Page<SysUploadFilePO> page = ParamHandler.buildPage(pageNumber, pageSize);
         SortParam sort = ParamHandler.buildSortParam(columnKey, order);
         return service.getPage(query, page, sort);
     }
@@ -90,24 +90,24 @@ public class SysRoleController {
     /**
      * 导出
      */
-    @SaCheckPermission("sys:role:export")
+    @SaCheckPermission("sys:upload:file:export")
     @PostMapping("/export")
-    public void export(@RequestBody SysRolePO query,
+    public void export(@RequestBody SysUploadFilePO query,
                        @RequestParam(required = false) String columnKey,
                        @RequestParam(required = false) String order,
                        HttpServletResponse response) {
         SortParam sort = ParamHandler.buildSortParam(columnKey, order);
-        List<SysRolePO> list = service.getList(query, sort);
-        ExcelUtils.export(response, "系统角色", list, SysRolePO.class);
+        List<SysUploadFilePO> list = service.getList(query, sort);
+        ExcelUtils.export(response, "上传文件管理", list, SysUploadFilePO.class);
     }
 
     /**
      * 导入
      */
-    @SaCheckPermission("sys:role:import")
+    @SaCheckPermission("sys:upload:file:import")
     @PostMapping("/import")
     public void importData(@RequestParam("file") MultipartFile file) throws Exception {
-        List<SysRolePO> pos = ExcelUtils.readMultipartFile(file, SysRolePO.class);
+        List<SysUploadFilePO> pos = ExcelUtils.readMultipartFile(file, SysUploadFilePO.class);
         service.createBatch(pos);
     }
 

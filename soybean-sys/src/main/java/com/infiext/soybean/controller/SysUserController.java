@@ -5,15 +5,14 @@ import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.handler.ParamHandler;
 import com.infiext.soybean.po.SysUserPO;
 import com.infiext.soybean.service.SysUserService;
+import com.infiext.soybean.utils.excel.ExcelUtils;
 import com.mybatisflex.core.paginate.Page;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class SysUserController {
     @SaCheckPermission("sys:user:add")
     @PostMapping("/create")
     public SysUserPO create(@Validated @RequestBody SysUserPO po) {
-        return service.createSysUser(po);
+        return service.create(po);
     }
 
     /**
@@ -40,7 +39,7 @@ public class SysUserController {
     @SaCheckPermission("sys:user:edit")
     @PostMapping("/update")
     public SysUserPO update(@Validated @RequestBody SysUserPO po) {
-        return service.updateSysUser(po);
+        return service.update(po);
     }
 
     /**
@@ -49,7 +48,7 @@ public class SysUserController {
     @SaCheckPermission("sys:user:delete")
     @PostMapping("/delete")
     public void delete(@RequestBody String[] ids) {
-        service.deleteSysUser(List.of(ids));
+        service.delete(List.of(ids));
     }
 
     /**
@@ -58,7 +57,7 @@ public class SysUserController {
     @SaCheckPermission("sys:user:list")
     @PostMapping("/get")
     public SysUserPO get(@RequestParam String id) {
-        return service.getSysUserById(id);
+        return service.getById(id);
     }
 
     /**
@@ -70,7 +69,7 @@ public class SysUserController {
                                 @RequestParam(required = false) String columnKey,
                                 @RequestParam(required = false) String order) {
         SortParam sort = ParamHandler.buildSortParam(columnKey, order);
-        return service.getSysUserList(query, sort);
+        return service.getList(query, sort);
     }
 
     /**
@@ -85,7 +84,31 @@ public class SysUserController {
                                 @RequestParam(required = false) String order) {
         Page<SysUserPO> page = ParamHandler.buildPage(pageNumber, pageSize);
         SortParam sort = ParamHandler.buildSortParam(columnKey, order);
-        return service.getSysUserPage(query, page, sort);
+        return service.getPage(query, page, sort);
+    }
+
+    /**
+     * 导出
+     */
+    @SaCheckPermission("sys:user:export")
+    @PostMapping("/export")
+    public void export(@RequestBody SysUserPO query,
+                       @RequestParam(required = false) String columnKey,
+                       @RequestParam(required = false) String order,
+                       HttpServletResponse response) {
+        SortParam sort = ParamHandler.buildSortParam(columnKey, order);
+        List<SysUserPO> list = service.getList(query, sort);
+        ExcelUtils.export(response, "用户表", list, SysUserPO.class);
+    }
+
+    /**
+     * 导入
+     */
+    @SaCheckPermission("sys:user:import")
+    @PostMapping("/import")
+    public void importData(@RequestParam("file") MultipartFile file) throws Exception {
+        List<SysUserPO> pos = ExcelUtils.readMultipartFile(file, SysUserPO.class);
+        service.createBatch(pos);
     }
 
     @PostMapping("/changePassword")

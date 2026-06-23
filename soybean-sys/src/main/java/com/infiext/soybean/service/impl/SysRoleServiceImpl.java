@@ -49,6 +49,15 @@ public class SysRoleServiceImpl implements SysRoleService {
     }
 
     /**
+     * 批量创建
+     */
+    @Transactional
+    @Override
+    public void createBatch(List<SysRolePO> list) {
+        list.forEach(this::create);
+    }
+
+    /**
      * 更新
      */
     @Transactional

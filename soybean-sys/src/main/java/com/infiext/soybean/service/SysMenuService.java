@@ -12,6 +12,9 @@ public interface SysMenuService {
     SysMenuPO create(SysMenuPO po);
 
     @Transactional
+    void createBatch(List<SysMenuPO> list);
+
+    @Transactional
     SysMenuPO update(SysMenuPO po);
 
     @Transactional

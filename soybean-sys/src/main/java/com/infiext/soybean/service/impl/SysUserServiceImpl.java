@@ -1,5 +1,6 @@
 package com.infiext.soybean.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.MD5;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.enums.StatusEnum;
@@ -16,6 +17,7 @@ import com.infiext.soybean.validator.sys.user.SysUserValidationContext;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,17 +40,37 @@ public class SysUserServiceImpl implements SysUserService {
     @Resource
     private SysUserRoleService sysUserRoleService;
 
+    @Value("${app.default.password}")
+    private String defaultPassword;
+
     /**
      * 创建用户
      */
     @Override
     @Transactional
-    public SysUserPO createSysUser(SysUserPO po) {
-        po.setPassword(MD5.create().digestHex16("123456"));
+    public SysUserPO create(SysUserPO po) {
+        po.setPassword(MD5.create().digestHex16(defaultPassword));
         validator.validateAll(po);
         po.save();
+        if (StrUtil.isNotBlank(po.getRoleCode())) {
+            String roleId = SysRolePO.create().select(SYS_ROLE.ID).where(SYS_ROLE.ROLE_CODE.eq(po.getRoleCode())).oneAs(String.class);
+            if (roleId == null) {
+                throw new BusinessException("角色不存在，请检查角色代码: " + po.getRoleCode());
+            }
+            SysUserRolePO roleRelations = SysUserRolePO.create().setRoleId(roleId);
+            po.setRoles(List.of(roleRelations));
+        }
         sysUserRoleService.resetUserRole(po.getId(), po.getRoles());
         return po;
+    }
+
+    /**
+     * 批量创建
+     */
+    @Transactional
+    @Override
+    public void createBatch(List<SysUserPO> list) {
+        list.forEach(this::create);
     }
 
     /**
@@ -56,7 +78,7 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     @Transactional
-    public SysUserPO updateSysUser(SysUserPO po) {
+    public SysUserPO update(SysUserPO po) {
         validator.validateAll(po);
         boolean status = po.updateById();
         if (!status) {
@@ -71,7 +93,7 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     @Transactional
-    public void deleteSysUser(List<String> ids) {
+    public void delete(List<String> ids) {
         mapper.deleteBatchByIds(ids);
         for (String id : ids) {
             sysUserRoleService.resetUserRole(id, new ArrayList<>());
@@ -82,7 +104,7 @@ public class SysUserServiceImpl implements SysUserService {
      * 获取用户
      */
     @Override
-    public SysUserPO getSysUserById(String id) {
+    public SysUserPO getById(String id) {
         return SysUserPO.create().setId(id).withRelations().oneById();
     }
 
@@ -90,7 +112,7 @@ public class SysUserServiceImpl implements SysUserService {
      * 获取用户分页
      */
     @Override
-    public Page<SysUserPO> getSysUserPage(SysUserPO query, Page<SysUserPO> page, SortParam sort) {
+    public Page<SysUserPO> getPage(SysUserPO query, Page<SysUserPO> page, SortParam sort) {
         QueryWrapper queryWrapper = getQueryWrapper(query, sort);
         return mapper.paginateWithRelations(page, queryWrapper);
     }
@@ -99,7 +121,7 @@ public class SysUserServiceImpl implements SysUserService {
      * 获取用户列表
      */
     @Override
-    public List<SysUserPO> getSysUserList(SysUserPO query, SortParam sort) {
+    public List<SysUserPO> getList(SysUserPO query, SortParam sort) {
         QueryWrapper queryWrapper = getQueryWrapper(query, sort);
         return mapper.selectListWithRelationsByQuery(queryWrapper);
     }

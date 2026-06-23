@@ -52,5 +52,4 @@ public class SysMenuPermissionServiceImpl implements SysMenuPermissionService {
                 }
         );
     }
-    
 }
