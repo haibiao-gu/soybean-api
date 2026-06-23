@@ -7,9 +7,11 @@ import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
@@ -65,6 +67,7 @@ public class Application {
             long startupTimeMs = endTime - startTime; // 耗时（毫秒）
             double startupTimeS = startupTimeMs / 1000.0; // 耗时（秒，保留1位小数）
             String startupTimeDesc = String.format("%d 毫秒（%.1f 秒）", startupTimeMs, startupTimeS);
+            String uploadInfoBlock = buildUploadInfoBlock(environment);
 
             String fullServerInfo = """
                     
@@ -86,6 +89,7 @@ public class Application {
                     当前堆内存：%d MB
                     空闲堆内存：%d MB
                     虚拟线程支持：%s
+                    %s
                     ==================================================
                     🎉 应用已就绪，可正常访问！
                     ==================================================
@@ -100,7 +104,8 @@ public class Application {
                     jvmInfo.get("maxMemory"),
                     jvmInfo.get("totalMemory"),
                     jvmInfo.get("freeMemory"),
-                    virtualThreadSupport
+                    virtualThreadSupport,
+                    uploadInfoBlock
             );
             log.info(fullServerInfo);
         };
@@ -116,5 +121,63 @@ public class Application {
         } catch (ClassNotFoundException e) {
             return false;
         }
+    }
+
+    private String buildUploadInfoBlock(Environment environment) {
+        String uploadStore = firstNonBlank(
+                environment.getProperty("app.default.upload-store"),
+                environment.getProperty("app.upload-store")
+        );
+        if (!StringUtils.hasText(uploadStore)) {
+            return "";
+        }
+
+        String storeType = uploadStore.trim().toUpperCase(Locale.ROOT);
+        if ("LOCAL".equals(storeType)) {
+            String localDir = firstNonBlank(
+                    environment.getProperty("app.default.local-upload-dir"),
+                    environment.getProperty("app.local-upload-dir")
+            );
+            if (!StringUtils.hasText(localDir)) {
+                return "";
+            }
+            return """
+                    
+                    📌 文件上传配置
+                    --------------------------------------------------
+                    存储方式：LOCAL
+                    本地上传目录：%s
+                    """.formatted(localDir);
+        }
+
+        if ("MINIO".equals(storeType)) {
+            String endpoint = environment.getProperty("app.minio.endpoint");
+            String bucketName = environment.getProperty("app.minio.bucket-name");
+            String publicUrl = environment.getProperty("app.minio.public-url");
+            if (!StringUtils.hasText(endpoint) || !StringUtils.hasText(bucketName)) {
+                return "";
+            }
+            String displayPublicUrl = StringUtils.hasText(publicUrl) ? publicUrl : "未配置";
+            return """
+                    
+                    📌 文件上传配置
+                    --------------------------------------------------
+                    存储方式：MINIO
+                    MinIO Endpoint：%s
+                    MinIO Bucket：%s
+                    MinIO Public URL：%s
+                    """.formatted(endpoint, bucketName, displayPublicUrl);
+        }
+
+        return "";
+    }
+
+    private String firstNonBlank(String... values) {
+        for (String value : values) {
+            if (StringUtils.hasText(value)) {
+                return value;
+            }
+        }
+        return null;
     }
 }

@@ -20,8 +20,8 @@ import java.nio.file.Files;
 
 @Component
 public class LocalUploadStoreService implements UploadStoreService {
-    @Value("${app.default.bucket-name}")
-    private String defaultBucketName;
+    @Value("${app.local-upload-dir}")
+    private String localUploadDir;
 
     @Override
     public FileStoreType getStoreType() {
@@ -30,7 +30,7 @@ public class LocalUploadStoreService implements UploadStoreService {
 
     @Override
     public UploadStoreResult upload(UploadStoreRequest request) {
-        String fullPath = defaultBucketName + File.separator + request.getRelativePath();
+        String fullPath = localUploadDir + File.separator + request.getRelativePath();
         File destFile = new File(fullPath);
         File parentDir = destFile.getParentFile();
         if (!parentDir.exists()) {
@@ -40,7 +40,7 @@ public class LocalUploadStoreService implements UploadStoreService {
 
         return UploadStoreResult.builder()
                 .storeType(FileStoreType.LOCAL)
-                .bucketName(defaultBucketName)
+                .bucketName(localUploadDir)
                 .filePath(fullPath)
                 .fileUrl("/api/file/" + request.getRelativePath().replace(File.separator, "/"))
                 .build();

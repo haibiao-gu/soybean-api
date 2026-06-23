@@ -40,7 +40,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Resource
     private SysUserRoleService sysUserRoleService;
 
-    @Value("${app.default.password}")
+    @Value("${app.default-password}")
     private String defaultPassword;
 
     /**

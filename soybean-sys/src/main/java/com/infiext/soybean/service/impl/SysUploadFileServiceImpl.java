@@ -40,8 +40,8 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
     @Resource
     private UploadStoreFactory uploadStoreFactory;
 
-    @Value("${app.default.upload-store}")
-    private String defaultUploadStore;
+    @Value("${app.upload-store}")
+    private String uploadStore;
 
     /**
      * 上传文件
@@ -121,6 +121,8 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
         }
         FileStoreType storeType = filePO.getStoreType() == null ? FileStoreType.LOCAL : filePO.getStoreType();
         DownloadStoreRequest request = DownloadStoreRequest.builder()
+                .bucketName(filePO.getBucketName())
+                .fileKey(filePO.getFileKey())
                 .filePath(filePO.getFilePath())
                 .originalFileName(filePO.getOriginalFileName())
                 .mimeType(filePO.getMimeType())
@@ -208,9 +210,9 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
     }
 
     private FileStoreType resolveUploadStoreType() {
-        FileStoreType storeType = FileStoreType.from(defaultUploadStore);
+        FileStoreType storeType = FileStoreType.from(uploadStore);
         if (storeType == null) {
-            throw new BusinessException("默认上传存储类型不支持：" + defaultUploadStore);
+            throw new BusinessException("默认上传存储类型不支持：" + uploadStore);
         }
         return storeType;
     }

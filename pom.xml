@@ -39,6 +39,8 @@
 
         <poi.version>5.5.1</poi.version>
         
+        <minio.version>8.5.17</minio.version>
+        
         <soybean.version>1.0.0</soybean.version>
 
         <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
@@ -132,6 +134,12 @@
                 <version>${postgresql.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
+            </dependency>
+            
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
                 <artifactId>soybean-app</artifactId>
