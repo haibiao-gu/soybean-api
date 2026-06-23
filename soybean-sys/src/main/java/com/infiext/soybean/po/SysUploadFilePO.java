@@ -92,7 +92,7 @@ public class SysUploadFilePO extends BasePO<SysUploadFilePO> {
      * 存储系统中的唯一 key
      */
     @Column(value = "file_key")
-    @ExcelField(value = "存储系统中的唯一 key", unique = false, sort = 17, required = false, maxLength = 32)
+    @ExcelField(value = "存储系统中的唯一 key", unique = false, sort = 17, required = false, maxLength = 500)
     private String fileKey;
 
     /**

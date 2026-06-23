@@ -20,6 +20,11 @@
 
         <dependency>
             <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-core-mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
             <artifactId>soybean-auth</artifactId>
         </dependency>
 

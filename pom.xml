@@ -178,6 +178,12 @@
 
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-core-mail</artifactId>
+                <version>${soybean.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
                 <artifactId>soybean-auth</artifactId>
                 <version>${soybean.version}</version>
             </dependency>

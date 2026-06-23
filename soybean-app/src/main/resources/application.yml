@@ -4,6 +4,8 @@ app:
   default-password: ${DEFAULT_PASSWORD}
   upload-store: ${UPLOAD_STORE}
   local-upload-dir: ${LOCAL_UPLOAD_DIR}
+  mail:
+    from: ${MAIL_FROM:}
   minio:
     endpoint: ${MINIO_ENDPOINT}
     access-key: ${MINIO_ACCESS_KEY}
@@ -23,6 +25,18 @@ spring:
     name: ${APP_NAME} # 应用名称
   profiles:
     active: ${PROFILES_ACTIVE} # 运行环境（dev/test/prod）
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT:25}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:false}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:false}
   # ========== Redis配置 ==========
   data:
     redis:
