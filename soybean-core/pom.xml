@@ -18,5 +18,6 @@
         <module>core-data</module>
         <module>core-web</module>
         <module>core-excel</module>
+        <module>core-upload</module>
     </modules>
 </project>

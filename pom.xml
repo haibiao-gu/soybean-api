@@ -164,6 +164,12 @@
 
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
+                <artifactId>soybean-core-upload</artifactId>
+                <version>${soybean.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.infiext.soybean</groupId>
                 <artifactId>soybean-auth</artifactId>
                 <version>${soybean.version}</version>
             </dependency>

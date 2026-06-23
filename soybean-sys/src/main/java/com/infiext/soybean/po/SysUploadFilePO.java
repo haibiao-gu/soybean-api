@@ -2,7 +2,7 @@ package com.infiext.soybean.po;
 
 import com.infiext.soybean.domain.BasePO;
 import com.infiext.soybean.enums.FileStatusEnum;
-import com.infiext.soybean.enums.FileStoreType;
+import com.infiext.soybean.upload.enums.FileStoreType;
 import com.infiext.soybean.utils.excel.annotation.ExcelField;
 import com.mybatisflex.annotation.Column;
 import com.mybatisflex.annotation.Table;
@@ -75,10 +75,10 @@ public class SysUploadFilePO extends BasePO<SysUploadFilePO> {
     private String fileMd5;
 
     /**
-     * 存储位置（1-本地）
+     * 存储位置（1-本地,2-MinIO）
      */
     @Column(value = "store_type")
-    @ExcelField(value = "存储位置（1-本地）", unique = false, sort = 15, required = false, maxLength = 50)
+    @ExcelField(value = "存储位置（1-本地,2-MinIO）", unique = false, sort = 15, required = false, maxLength = 50)
     private FileStoreType storeType;
 
     /**

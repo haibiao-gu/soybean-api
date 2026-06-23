@@ -5,11 +5,15 @@ import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.MD5;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.enums.FileStatusEnum;
-import com.infiext.soybean.enums.FileStoreType;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.mapper.SysUploadFileMapper;
 import com.infiext.soybean.po.SysUploadFilePO;
 import com.infiext.soybean.service.SysUploadFileService;
+import com.infiext.soybean.upload.enums.FileStoreType;
+import com.infiext.soybean.upload.model.DownloadStoreRequest;
+import com.infiext.soybean.upload.model.UploadStoreRequest;
+import com.infiext.soybean.upload.model.UploadStoreResult;
+import com.infiext.soybean.upload.service.UploadStoreFactory;
 import com.infiext.soybean.utils.FileUtils;
 import com.infiext.soybean.utils.SortUtil;
 import com.infiext.soybean.validator.sys.file.SysUploadFileValidationContext;
@@ -22,12 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.List;
 
 import static com.infiext.soybean.po.table.SysUploadFileTableDef.SYS_UPLOAD_FILE;
@@ -38,11 +37,11 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
     private SysUploadFileValidationContext validator;
     @Resource
     private SysUploadFileMapper mapper;
+    @Resource
+    private UploadStoreFactory uploadStoreFactory;
 
     @Value("${app.default.upload-store}")
     private String defaultUploadStore;
-    @Value("${app.default.bucket-name}")
-    private String defaultBucketName;
 
     /**
      * 上传文件
@@ -73,17 +72,16 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
             String fileMd5 = MD5.create().digestHex(fileBytes);
 
             String relativePath = FileUtils.buildFilePath(fileName);
-            
-            String fullPath = defaultBucketName + File.separator + relativePath;
-
-            File destFile = new File(fullPath);
-
-            File parentDir = destFile.getParentFile();
-            if (!parentDir.exists()) {
-                parentDir.mkdirs();
-            }
-
-            FileUtil.writeBytes(fileBytes, destFile);
+            FileStoreType storeType = resolveUploadStoreType();
+            UploadStoreRequest uploadRequest = UploadStoreRequest.builder()
+                    .fileBytes(fileBytes)
+                    .originalFileName(originalFileName)
+                    .fileName(fileName)
+                    .fileSuffix(fileSuffix)
+                    .relativePath(relativePath)
+                    .contentType(contentType)
+                    .build();
+            UploadStoreResult uploadResult = uploadStoreFactory.get(storeType).upload(uploadRequest);
 
             SysUploadFilePO filePO = SysUploadFilePO.create();
             filePO.setBizType(bizType);
@@ -94,10 +92,11 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
             filePO.setMimeType(contentType);
             filePO.setFileSize(FileUtils.formatFileSize(fileSize));
             filePO.setFileMd5(fileMd5);
-            filePO.setStoreType(FileStoreType.LOCAL);
-            filePO.setBucketName(defaultBucketName);
-            filePO.setFilePath(fullPath);
-            filePO.setFileUrl("/api/file/" + relativePath.replace(File.separator, "/"));
+            filePO.setStoreType(uploadResult.getStoreType());
+            filePO.setBucketName(uploadResult.getBucketName());
+            filePO.setFileKey(uploadResult.getFileKey());
+            filePO.setFilePath(uploadResult.getFilePath());
+            filePO.setFileUrl(uploadResult.getFileUrl());
             filePO.setStatus(FileStatusEnum.COMPLETED);
 
             filePO.save();
@@ -120,31 +119,13 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
         if (filePO == null) {
             throw new BusinessException("文件不存在");
         }
-
-        String filePath = filePO.getFilePath();
-        File file = new File(filePath);
-
-        if (!file.exists()) {
-            throw new BusinessException("文件物理路径不存在：" + filePath);
-        }
-
-        try {
-            String originalFileName = filePO.getOriginalFileName();
-            String encodedFileName = URLEncoder.encode(originalFileName, StandardCharsets.UTF_8)
-                    .replaceAll("\\+", "%20");
-
-            response.setContentType(filePO.getMimeType());
-            response.setContentLengthLong(file.length());
-            response.setHeader("Content-Disposition",
-                    "attachment;filename*=UTF-8''" + encodedFileName);
-
-            try (OutputStream outputStream = response.getOutputStream()) {
-                Files.copy(file.toPath(), outputStream);
-                outputStream.flush();
-            }
-        } catch (IOException e) {
-            throw new BusinessException("文件下载失败：" + e.getMessage());
-        }
+        FileStoreType storeType = filePO.getStoreType() == null ? FileStoreType.LOCAL : filePO.getStoreType();
+        DownloadStoreRequest request = DownloadStoreRequest.builder()
+                .filePath(filePO.getFilePath())
+                .originalFileName(filePO.getOriginalFileName())
+                .mimeType(filePO.getMimeType())
+                .build();
+        uploadStoreFactory.get(storeType).download(request, response);
     }
 
     /**
@@ -224,6 +205,14 @@ public class SysUploadFileServiceImpl implements SysUploadFileService {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.select(SYS_UPLOAD_FILE.DEFAULT_COLUMNS);
         return SortUtil.orderBy(queryWrapper, sort, SysUploadFilePO.class, SYS_UPLOAD_FILE.CREATE_TIME.asc());
+    }
+
+    private FileStoreType resolveUploadStoreType() {
+        FileStoreType storeType = FileStoreType.from(defaultUploadStore);
+        if (storeType == null) {
+            throw new BusinessException("默认上传存储类型不支持：" + defaultUploadStore);
+        }
+        return storeType;
     }
 
 }

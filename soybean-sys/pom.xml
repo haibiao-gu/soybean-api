@@ -28,5 +28,10 @@
             <artifactId>soybean-core-excel</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.infiext.soybean</groupId>
+            <artifactId>soybean-core-upload</artifactId>
+        </dependency>
+
     </dependencies>
 </project>
