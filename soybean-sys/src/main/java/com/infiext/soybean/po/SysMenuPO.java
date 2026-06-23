@@ -25,21 +25,21 @@ public class SysMenuPO extends BasePO<SysMenuPO> {
      * 状态（1-正常，0-停用）
      */
     @Column(value = "status")
-    @ExcelField(value = "状态（1-正常，0-停用）", unique = false, sort = 7, required = true, maxLength = 10)
+    @ExcelField(value = "状态", unique = false, sort = 7, required = true, maxLength = 10)
     private StatusEnum status;
 
     /**
      * 父菜单ID（0表示根菜单）
      */
     @Column(value = "parent_id")
-    @ExcelField(value = "父菜单ID（0表示根菜单）", unique = false, sort = 8, required = true, maxLength = 32)
+    @ExcelField(value = "父菜单ID", unique = false, sort = 8, required = true, maxLength = 32)
     private String parentId;
 
     /**
      * 菜单类型（1:目录 2:菜单）
      */
     @Column(value = "menu_type")
-    @ExcelField(value = "菜单类型（1:目录 2:菜单）", unique = false, sort = 9, required = true, maxLength = 10)
+    @ExcelField(value = "菜单类型", unique = false, sort = 9, required = true, maxLength = 10)
     private String menuType;
 
     /**
@@ -81,7 +81,7 @@ public class SysMenuPO extends BasePO<SysMenuPO> {
      * 图标类型（1:iconify图标 2:本地图标）
      */
     @Column(value = "icon_type")
-    @ExcelField(value = "图标类型（1:iconify图标 2:本地图标）", unique = false, sort = 15, required = false, maxLength = 10)
+    @ExcelField(value = "图标类型", unique = false, sort = 15, required = false, maxLength = 10)
     private String iconType;
 
     /**
@@ -95,14 +95,14 @@ public class SysMenuPO extends BasePO<SysMenuPO> {
      * 是否缓存（0:否 1:是）
      */
     @Column(value = "keep_alive")
-    @ExcelField(value = "是否缓存（0:否 1:是）", unique = false, sort = 17, required = false, maxLength = 32)
+    @ExcelField(value = "是否缓存", unique = false, sort = 17, required = false, maxLength = 32)
     private YesOrNoEnum keepAlive;
 
     /**
      * 是否常量路由（0:否 1:是）
      */
     @Column(value = "constant")
-    @ExcelField(value = "是否常量路由（0:否 1:是）", unique = false, sort = 18, required = false, maxLength = 32)
+    @ExcelField(value = "是否常量路由", unique = false, sort = 18, required = false, maxLength = 32)
     private YesOrNoEnum constant;
 
     /**
@@ -123,21 +123,21 @@ public class SysMenuPO extends BasePO<SysMenuPO> {
      * 是否在菜单中隐藏（0:否 1:是）
      */
     @Column(value = "hide_in_menu")
-    @ExcelField(value = "是否在菜单中隐藏（0:否 1:是）", unique = false, sort = 21, required = false, maxLength = 32)
+    @ExcelField(value = "是否在菜单中隐藏", unique = false, sort = 21, required = false, maxLength = 32)
     private YesOrNoEnum hideInMenu;
 
     /**
      * 激活的菜单（用于高亮）
      */
     @Column(value = "active_menu")
-    @ExcelField(value = "激活的菜单（用于高亮）", unique = false, sort = 22, required = false, maxLength = 50)
+    @ExcelField(value = "激活的菜单", unique = false, sort = 22, required = false, maxLength = 50)
     private String activeMenu;
 
     /**
      * 是否支持多标签（0:否 1:是）
      */
     @Column(value = "multi_tab")
-    @ExcelField(value = "是否支持多标签（0:否 1:是）", unique = false, sort = 23, required = false, maxLength = 32)
+    @ExcelField(value = "是否支持多标签", unique = false, sort = 23, required = false, maxLength = 32)
     private YesOrNoEnum multiTab;
 
     /**

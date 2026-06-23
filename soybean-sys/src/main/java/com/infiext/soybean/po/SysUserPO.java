@@ -52,14 +52,13 @@ public class SysUserPO extends BasePO<SysUserPO> {
      * 登录密码
      */
     @Column(value = "password")
-    @ExcelField(value = "登录密码", unique = false, sort = 11, required = false, maxLength = 64)
     private String password;
 
     /**
      * 状态（1-正常，0-停用）
      */
     @Column(value = "status")
-    @ExcelField(value = "状态（1-正常，0-停用）", unique = false, sort = 12, required = true, maxLength = 10)
+    @ExcelField(value = "状态", unique = false, sort = 12, required = true, maxLength = 10)
     private StatusEnum status;
 
     @Column(ignore = true)

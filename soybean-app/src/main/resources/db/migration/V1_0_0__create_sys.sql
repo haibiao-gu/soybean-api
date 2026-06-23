@@ -1,19 +1,19 @@
 DROP TABLE IF EXISTS sys_user;
-CREATE TABLE sys_user
-(
-    id          VARCHAR(32) NOT NULL,
-    create_by   VARCHAR(32),
-    create_time TIMESTAMP,
-    update_by   VARCHAR(32),
-    update_time TIMESTAMP,
-    del_flag    INT4        NOT NULL,
-    version     INT4        NOT NULL,
-    user_name   VARCHAR(50) NOT NULL,
-    user_phone  VARCHAR(64) NOT NULL,
-    user_avatar VARCHAR(500),
-    password    VARCHAR(64),
-    status      VARCHAR(10) NOT NULL,
-    PRIMARY KEY (id)
+CREATE TABLE sys_user(
+                         id VARCHAR(32) NOT NULL,
+                         create_by VARCHAR(32),
+                         create_time TIMESTAMP,
+                         update_by VARCHAR(32),
+                         update_time TIMESTAMP,
+                         del_flag INT4 NOT NULL,
+                         version INT4 NOT NULL,
+                         user_name VARCHAR(50) NOT NULL,
+                         user_phone VARCHAR(64) NOT NULL,
+                         user_email VARCHAR(500),
+                         user_avatar VARCHAR(500),
+                         password VARCHAR(64),
+                         status VARCHAR(10) NOT NULL,
+                         PRIMARY KEY (id)
 );
 COMMENT ON COLUMN sys_user.id IS '主键';
 COMMENT ON COLUMN sys_user.create_by IS '创建人';
@@ -24,6 +24,7 @@ COMMENT ON COLUMN sys_user.del_flag IS '删除标识';
 COMMENT ON COLUMN sys_user.version IS '版本号';
 COMMENT ON COLUMN sys_user.user_name IS '用户姓名';
 COMMENT ON COLUMN sys_user.user_phone IS '用户手机号码';
+COMMENT ON COLUMN sys_user.user_email IS '用户电子邮箱';
 COMMENT ON COLUMN sys_user.user_avatar IS '用户头像';
 COMMENT ON COLUMN sys_user.password IS '登录密码';
 COMMENT ON COLUMN sys_user.status IS '状态（1-正常，0-停用）';
@@ -31,34 +32,33 @@ COMMENT ON TABLE sys_user IS '用户表';
 
 
 DROP TABLE IF EXISTS sys_menu;
-CREATE TABLE sys_menu
-(
-    id                 VARCHAR(32)  NOT NULL,
-    create_by          VARCHAR(32),
-    create_time        TIMESTAMP,
-    update_by          VARCHAR(32),
-    update_time        TIMESTAMP,
-    del_flag           INT4         NOT NULL,
-    version            INT4         NOT NULL,
-    status             VARCHAR(10)  NOT NULL,
-    parent_id          VARCHAR(32)  NOT NULL,
-    menu_type          VARCHAR(10)  NOT NULL,
-    menu_name          VARCHAR(50)  NOT NULL,
-    route_name         VARCHAR(50)  NOT NULL,
-    route_path         VARCHAR(500) NOT NULL,
-    component          VARCHAR(500),
-    icon               VARCHAR(64),
-    icon_type          VARCHAR(10),
-    i18n_key           VARCHAR(50),
-    keep_alive         INT4,
-    constant           INT4,
-    sort_order         INT4,
-    href               VARCHAR(500),
-    hide_in_menu       INT4,
-    active_menu        VARCHAR(50),
-    multi_tab          INT4,
-    fixed_index_in_tab INT4,
-    PRIMARY KEY (id)
+CREATE TABLE sys_menu(
+                         id VARCHAR(32) NOT NULL,
+                         create_by VARCHAR(32),
+                         create_time TIMESTAMP,
+                         update_by VARCHAR(32),
+                         update_time TIMESTAMP,
+                         del_flag INT4 NOT NULL,
+                         version INT4 NOT NULL,
+                         status VARCHAR(10) NOT NULL,
+                         parent_id VARCHAR(32) NOT NULL,
+                         menu_type VARCHAR(10) NOT NULL,
+                         menu_name VARCHAR(50) NOT NULL,
+                         route_name VARCHAR(50) NOT NULL,
+                         route_path VARCHAR(500) NOT NULL,
+                         component VARCHAR(500),
+                         icon VARCHAR(64),
+                         icon_type VARCHAR(10),
+                         i18n_key VARCHAR(50),
+                         keep_alive INT4,
+                         constant INT4,
+                         sort_order INT4,
+                         href VARCHAR(500),
+                         hide_in_menu INT4,
+                         active_menu VARCHAR(50),
+                         multi_tab INT4,
+                         fixed_index_in_tab INT4,
+                         PRIMARY KEY (id)
 );
 COMMENT ON COLUMN sys_menu.id IS '主键';
 COMMENT ON COLUMN sys_menu.create_by IS '创建人';
@@ -88,46 +88,19 @@ COMMENT ON COLUMN sys_menu.fixed_index_in_tab IS '在tab中的固定索引';
 COMMENT ON TABLE sys_menu IS '系统菜单';
 
 
-DROP TABLE IF EXISTS sys_menu_query;
-CREATE TABLE sys_menu_query
-(
-    menu_id VARCHAR(32) NOT NULL,
-    key     VARCHAR(64) NOT NULL,
-    value   VARCHAR(64) NOT NULL
-);
-COMMENT ON COLUMN sys_menu_query.menu_id IS '菜单ID';
-COMMENT ON COLUMN sys_menu_query.key IS '参数名';
-COMMENT ON COLUMN sys_menu_query.value IS '参数值';
-COMMENT ON TABLE sys_menu_query IS '菜单路由查询参数';
-
-
-DROP TABLE IF EXISTS sys_menu_permission;
-CREATE TABLE sys_menu_permission
-(
-    menu_id VARCHAR(32) NOT NULL,
-    key     VARCHAR(64) NOT NULL,
-    value   VARCHAR(50)
-);
-COMMENT ON COLUMN sys_menu_permission.menu_id IS '菜单ID';
-COMMENT ON COLUMN sys_menu_permission.key IS '权限';
-COMMENT ON COLUMN sys_menu_permission.value IS '描述';
-COMMENT ON TABLE sys_menu_permission IS '菜单权限';
-
-
 DROP TABLE IF EXISTS sys_role;
-CREATE TABLE sys_role
-(
-    id          VARCHAR(32) NOT NULL,
-    create_by   VARCHAR(32),
-    create_time TIMESTAMP,
-    update_by   VARCHAR(32),
-    update_time TIMESTAMP,
-    del_flag    INT4        NOT NULL,
-    version     INT4        NOT NULL,
-    role_name   VARCHAR(50),
-    role_code   VARCHAR(64) NOT NULL,
-    description VARCHAR(500),
-    PRIMARY KEY (id)
+CREATE TABLE sys_role(
+                         id VARCHAR(32) NOT NULL,
+                         create_by VARCHAR(32),
+                         create_time TIMESTAMP,
+                         update_by VARCHAR(32),
+                         update_time TIMESTAMP,
+                         del_flag INT4 NOT NULL,
+                         version INT4 NOT NULL,
+                         role_name VARCHAR(50),
+                         role_code VARCHAR(64) NOT NULL,
+                         description VARCHAR(500),
+                         PRIMARY KEY (id)
 );
 COMMENT ON COLUMN sys_role.id IS '主键';
 COMMENT ON COLUMN sys_role.create_by IS '创建人';
@@ -142,37 +115,107 @@ COMMENT ON COLUMN sys_role.description IS '角色描述';
 COMMENT ON TABLE sys_role IS '系统角色';
 
 
+DROP TABLE IF EXISTS sys_upload_file;
+CREATE TABLE sys_upload_file(
+                                id VARCHAR(32) NOT NULL,
+                                create_by VARCHAR(32),
+                                create_time TIMESTAMP,
+                                update_by VARCHAR(32),
+                                update_time TIMESTAMP,
+                                del_flag INT4 NOT NULL,
+                                version INT4 NOT NULL,
+                                biz_type VARCHAR(50) NOT NULL,
+                                biz_id VARCHAR(32) NOT NULL,
+                                original_file_name VARCHAR(500),
+                                file_name VARCHAR(50),
+                                file_suffix VARCHAR(50),
+                                mime_type VARCHAR(500) NOT NULL,
+                                file_size VARCHAR(500),
+                                file_md5 VARCHAR(32) NOT NULL,
+                                store_type VARCHAR(50),
+                                bucket_name VARCHAR(50),
+                                file_key VARCHAR(32),
+                                file_path VARCHAR(500),
+                                file_url VARCHAR(500),
+                                status VARCHAR(10),
+                                PRIMARY KEY (id)
+);
+COMMENT ON COLUMN sys_upload_file.id IS '主键';
+COMMENT ON COLUMN sys_upload_file.create_by IS '创建人';
+COMMENT ON COLUMN sys_upload_file.create_time IS '创建时间';
+COMMENT ON COLUMN sys_upload_file.update_by IS '更新人';
+COMMENT ON COLUMN sys_upload_file.update_time IS '更新时间';
+COMMENT ON COLUMN sys_upload_file.del_flag IS '删除标识';
+COMMENT ON COLUMN sys_upload_file.version IS '版本号';
+COMMENT ON COLUMN sys_upload_file.biz_type IS '业务模块';
+COMMENT ON COLUMN sys_upload_file.biz_id IS '业务表主键';
+COMMENT ON COLUMN sys_upload_file.original_file_name IS '原文件名';
+COMMENT ON COLUMN sys_upload_file.file_name IS '文件名称';
+COMMENT ON COLUMN sys_upload_file.file_suffix IS '文件后缀';
+COMMENT ON COLUMN sys_upload_file.mime_type IS 'MIME 类型';
+COMMENT ON COLUMN sys_upload_file.file_size IS '文件大小';
+COMMENT ON COLUMN sys_upload_file.file_md5 IS '文件哈希';
+COMMENT ON COLUMN sys_upload_file.store_type IS '存储位置（1-本地）';
+COMMENT ON COLUMN sys_upload_file.bucket_name IS '桶名';
+COMMENT ON COLUMN sys_upload_file.file_key IS '存储系统中的唯一 key';
+COMMENT ON COLUMN sys_upload_file.file_path IS '文件路径';
+COMMENT ON COLUMN sys_upload_file.file_url IS '文件URL';
+COMMENT ON COLUMN sys_upload_file.status IS '状态（0-上传中,1-完成,2-失败）';
+COMMENT ON TABLE sys_upload_file IS '上传文件管理';
+
+
+DROP TABLE IF EXISTS sys_menu_query;
+CREATE TABLE sys_menu_query(
+                               menu_id VARCHAR(32) NOT NULL,
+                               key VARCHAR(64) NOT NULL,
+                               value VARCHAR(64) NOT NULL
+);
+COMMENT ON COLUMN sys_menu_query.menu_id IS '菜单ID';
+COMMENT ON COLUMN sys_menu_query.key IS '参数名';
+COMMENT ON COLUMN sys_menu_query.value IS '参数值';
+COMMENT ON TABLE sys_menu_query IS '菜单路由查询参数';
+
+
 DROP TABLE IF EXISTS sys_role_menu;
-CREATE TABLE sys_role_menu
-(
-    role_id VARCHAR(32) NOT NULL,
-    menu_id VARCHAR(32) NOT NULL
+CREATE TABLE sys_role_menu(
+                              role_id VARCHAR(32) NOT NULL,
+                              menu_id VARCHAR(32) NOT NULL
 );
 COMMENT ON COLUMN sys_role_menu.role_id IS '角色ID';
 COMMENT ON COLUMN sys_role_menu.menu_id IS '菜单ID';
 COMMENT ON TABLE sys_role_menu IS '角色菜单关联表';
 
 
-DROP TABLE IF EXISTS sys_role_permission;
-CREATE TABLE sys_role_permission
-(
-    role_id        VARCHAR(32) NOT NULL,
-    permission_key VARCHAR(64) NOT NULL
-);
-COMMENT ON COLUMN sys_role_permission.role_id IS '角色ID';
-COMMENT ON COLUMN sys_role_permission.permission_key IS '权限';
-COMMENT ON TABLE sys_role_permission IS '角色权限关联表';
-
-
 DROP TABLE IF EXISTS sys_user_role;
-CREATE TABLE sys_user_role
-(
-    user_id VARCHAR(32) NOT NULL,
-    role_id VARCHAR(32) NOT NULL
+CREATE TABLE sys_user_role(
+                              user_id VARCHAR(32) NOT NULL,
+                              role_id VARCHAR(32) NOT NULL
 );
 COMMENT ON COLUMN sys_user_role.user_id IS '用户ID';
 COMMENT ON COLUMN sys_user_role.role_id IS '角色ID';
 COMMENT ON TABLE sys_user_role IS '用户角色关联表';
+
+
+DROP TABLE IF EXISTS sys_menu_permission;
+CREATE TABLE sys_menu_permission(
+                                    menu_id VARCHAR(32) NOT NULL,
+                                    key VARCHAR(64) NOT NULL,
+                                    value VARCHAR(50)
+);
+COMMENT ON COLUMN sys_menu_permission.menu_id IS '菜单ID';
+COMMENT ON COLUMN sys_menu_permission.key IS '权限';
+COMMENT ON COLUMN sys_menu_permission.value IS '描述';
+COMMENT ON TABLE sys_menu_permission IS '菜单权限';
+
+
+DROP TABLE IF EXISTS sys_role_permission;
+CREATE TABLE sys_role_permission(
+                                    role_id VARCHAR(32) NOT NULL,
+                                    permission_key VARCHAR(64) NOT NULL
+);
+COMMENT ON COLUMN sys_role_permission.role_id IS '角色ID';
+COMMENT ON COLUMN sys_role_permission.permission_key IS '权限';
+COMMENT ON TABLE sys_role_permission IS '角色权限关联表';
 
 
 INSERT INTO sys_user (id, del_flag, "version", user_name, user_phone, "password", status)
@@ -208,14 +251,20 @@ VALUES ('2-2', 'sys:menu:add', '新增'),
        ('2-2', 'sys:menu:delete', '删除'),
        ('2-2', 'sys:menu:edit', '编辑'),
        ('2-2', 'sys:menu:list', '列表'),
+       ('2-2', 'sys:menu:export', '导出'),
+       ('2-2', 'sys:menu:import', '导入'),
        ('2-3', 'sys:role:add', '新增'),
        ('2-3', 'sys:role:delete', '删除'),
        ('2-3', 'sys:role:edit', '编辑'),
        ('2-3', 'sys:role:list', '列表'),
+       ('2-3', 'sys:role:export', '导出'),
+       ('2-3', 'sys:role:import', '导入'),
        ('2-1', 'sys:user:add', '新增'),
        ('2-1', 'sys:user:delete', '删除'),
        ('2-1', 'sys:user:edit', '编辑'),
-       ('2-1', 'sys:user:list', '列表');
+       ('2-1', 'sys:user:list', '列表'),
+       ('2-1', 'sys:user:export', '导出'),
+       ('2-1', 'sys:user:import', '导入');
 
 
 INSERT INTO sys_role_permission (role_id, permission_key)
@@ -223,12 +272,18 @@ VALUES ('0', 'sys:menu:add'),
        ('0', 'sys:menu:delete'),
        ('0', 'sys:menu:edit'),
        ('0', 'sys:menu:list'),
+       ('0', 'sys:menu:export'),
+       ('0', 'sys:menu:import'),
        ('0', 'sys:role:add'),
        ('0', 'sys:role:delete'),
        ('0', 'sys:role:edit'),
        ('0', 'sys:role:list'),
+       ('0', 'sys:role:export'),
+       ('0', 'sys:role:import'),
        ('0', 'sys:user:add'),
        ('0', 'sys:user:delete'),
        ('0', 'sys:user:edit'),
-       ('0', 'sys:user:list');
+       ('0', 'sys:user:list'),
+       ('0', 'sys:user:export'),
+       ('0', 'sys:user:import');
 
