@@ -3,10 +3,10 @@ package com.infiext.soybean.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import com.infiext.soybean.domain.TestBO;
 import com.infiext.soybean.exception.BusinessException;
-import com.infiext.soybean.mail.model.MailSendRequest;
-import com.infiext.soybean.mail.service.MailService;
-import com.infiext.soybean.po.SysUploadFilePO;
-import com.infiext.soybean.service.SysUploadFileService;
+import com.infiext.soybean.model.MailSendRequest;
+import com.infiext.soybean.po.UploadFilePO;
+import com.infiext.soybean.service.MailService;
+import com.infiext.soybean.service.UploadFileService;
 import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Profile;
@@ -32,7 +32,7 @@ public class TestController {
     @Resource
     private MailService mailService;
     @Resource
-    private SysUploadFileService sysUploadFileService;
+    private UploadFileService uploadFileService;
 
     @PostMapping("/success")
     public String success() {
@@ -87,10 +87,10 @@ public class TestController {
     }
 
     @PostMapping("/upload/file")
-    public SysUploadFilePO uploadFile(@RequestParam("file") MultipartFile file,
-                                      @RequestParam(defaultValue = "test") String bizType,
-                                      @RequestParam(defaultValue = "test") String bizId) {
-        return sysUploadFileService.uploadFile(file, bizType, bizId);
+    public UploadFilePO uploadFile(@RequestParam("file") MultipartFile file,
+                                   @RequestParam(defaultValue = "test") String bizType,
+                                   @RequestParam(defaultValue = "test") String bizId) {
+        return uploadFileService.uploadFile(file, bizType, bizId);
     }
 
     @SaCheckLogin

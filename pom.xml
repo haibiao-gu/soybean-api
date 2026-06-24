@@ -13,6 +13,7 @@
     <modules>
         <module>soybean-app</module>
         <module>soybean-core</module>
+        <module>soybean-extension</module>
         <module>soybean-auth</module>
         <module>soybean-sys</module>
     </modules>
@@ -172,13 +173,13 @@
 
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
-                <artifactId>soybean-core-upload</artifactId>
+                <artifactId>soybean-extension-upload</artifactId>
                 <version>${soybean.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.infiext.soybean</groupId>
-                <artifactId>soybean-core-mail</artifactId>
+                <artifactId>soybean-extension-mail</artifactId>
                 <version>${soybean.version}</version>
             </dependency>
 

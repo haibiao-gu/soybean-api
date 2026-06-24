@@ -9,14 +9,12 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>soybean-core</artifactId>
+    <artifactId>soybean-extension</artifactId>
     <packaging>pom</packaging>
-    <description>核心聚合模块</description>
+    <description>扩展能力聚合模块</description>
 
     <modules>
-        <module>core-common</module>
-        <module>core-data</module>
-        <module>core-web</module>
-        <module>core-excel</module>
+        <module>extension-upload</module>
+        <module>extension-mail</module>
     </modules>
 </project>

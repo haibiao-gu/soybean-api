@@ -5,22 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.infiext.soybean</groupId>
-        <artifactId>soybean</artifactId>
+        <artifactId>soybean-extension</artifactId>
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>soybean-sys</artifactId>
-    <description>系统模块</description>
+    <artifactId>soybean-extension-mail</artifactId>
+    <description>核心邮件模块</description>
 
     <dependencies>
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-core-data</artifactId>
+            <artifactId>soybean-core-common</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-core-web</artifactId>
+            <artifactId>soybean-core-data</artifactId>
         </dependency>
 
         <dependency>
@@ -29,9 +29,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-extension-upload</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
         </dependency>
-
     </dependencies>
 </project>

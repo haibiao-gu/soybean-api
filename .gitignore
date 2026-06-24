@@ -27,3 +27,4 @@ target/
 .env.dev
 /logs/
 /docs/.Soybean/
+/upload/

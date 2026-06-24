@@ -20,7 +20,7 @@
 
         <dependency>
             <groupId>com.infiext.soybean</groupId>
-            <artifactId>soybean-core-mail</artifactId>
+            <artifactId>soybean-extension-mail</artifactId>
         </dependency>
 
         <dependency>
