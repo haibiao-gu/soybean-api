@@ -1,5 +1,6 @@
 package com.infiext.soybean.service.impl;
 
+import com.infiext.soybean.config.SecurityConfig;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.po.SysUserPO;
 import com.infiext.soybean.service.AuthService;
@@ -77,7 +78,17 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void changePassword(String userId, String oldPassword, String newPassword) {
         SysUserPO sysUser = sysUserService.getById(userId);
-        if (sysUser == null || !passwordEncoder.matches(oldPassword, sysUser.getPassword())) {
+        if (sysUser == null) {
+            throw new BusinessException("用户不存在！");
+        }
+        // 新格式：SHA-256 后 BCrypt 比对
+        String hashedOld = SecurityConfig.sha256(oldPassword);
+        boolean matched = passwordEncoder.matches(hashedOld, sysUser.getPassword());
+        // 兼容旧格式：直接 BCrypt 比对
+        if (!matched) {
+            matched = passwordEncoder.matches(oldPassword, sysUser.getPassword());
+        }
+        if (!matched) {
             throw new BusinessException("原密码错误！");
         }
         sysUserService.updatePassword(userId, newPassword);

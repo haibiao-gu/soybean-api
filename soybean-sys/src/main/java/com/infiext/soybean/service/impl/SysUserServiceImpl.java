@@ -1,7 +1,7 @@
 package com.infiext.soybean.service.impl;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.crypto.digest.MD5;
+import com.infiext.soybean.config.SecurityConfig;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.enums.StatusEnum;
 import com.infiext.soybean.exception.BusinessException;
@@ -53,7 +53,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public SysUserPO create(SysUserPO po) {
-        po.setPassword(passwordEncoder.encode(defaultPassword));
+        po.setPassword(passwordEncoder.encode(SecurityConfig.sha256(defaultPassword)));
         validator.validateAll(po);
         po.save();
         if (StrUtil.isNotBlank(po.getRoleCode())) {
@@ -78,7 +78,7 @@ public class SysUserServiceImpl implements SysUserService {
             return;
         }
         for (SysUserPO po : list) {
-            po.setPassword(passwordEncoder.encode(defaultPassword));
+            po.setPassword(passwordEncoder.encode(SecurityConfig.sha256(defaultPassword)));
             validator.validateAll(po);
         }
         // 每批 100 条
@@ -184,10 +184,22 @@ public class SysUserServiceImpl implements SysUserService {
                 .where(SYS_USER.USER_PHONE.eq(phone))
                 .and(SYS_USER.STATUS.eq(StatusEnum.ENABLED))
                 .one();
-        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+        if (user == null) {
             return null;
         }
-        return user.getId();
+        // 新格式：SHA-256 后 BCrypt 比对
+        String hashedInput = SecurityConfig.sha256(password);
+        if (passwordEncoder.matches(hashedInput, user.getPassword())) {
+            return user.getId();
+        }
+        // 兼容旧格式：直接 BCrypt 比对（存量密码）
+        if (passwordEncoder.matches(password, user.getPassword())) {
+            // 迁移为新格式
+            String newHash = passwordEncoder.encode(hashedInput);
+            SysUserPO.create().setPassword(newHash).setId(user.getId()).updateById();
+            return user.getId();
+        }
+        return null;
     }
 
     /**
@@ -243,7 +255,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public void updatePassword(String userId, String password) {
         SysUserPO userPO = SysUserPO.create().setId(userId).oneById();
-        userPO.setPassword(MD5.create().digestHex16(password));
+        userPO.setPassword(passwordEncoder.encode(SecurityConfig.sha256(password)));
         userPO.updateById();
     }
 }
