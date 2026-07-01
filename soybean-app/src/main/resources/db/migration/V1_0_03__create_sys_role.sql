@@ -1,16 +1,17 @@
 DROP TABLE IF EXISTS sys_role;
-CREATE TABLE sys_role(
-                         id VARCHAR(32) NOT NULL,
-                         create_by VARCHAR(32),
-                         create_time TIMESTAMP,
-                         update_by VARCHAR(32),
-                         update_time TIMESTAMP,
-                         del_flag INT4 NOT NULL,
-                         version INT4 NOT NULL,
-                         role_name VARCHAR(50),
-                         role_code VARCHAR(64) NOT NULL,
-                         description VARCHAR(500),
-                         PRIMARY KEY (id)
+CREATE TABLE sys_role
+(
+    id          VARCHAR(32) NOT NULL,
+    create_by   VARCHAR(32),
+    create_time TIMESTAMP,
+    update_by   VARCHAR(32),
+    update_time TIMESTAMP,
+    del_flag    INT4        NOT NULL,
+    version     INT4        NOT NULL,
+    role_name   VARCHAR(50),
+    role_code   VARCHAR(64) NOT NULL,
+    description VARCHAR(500),
+    PRIMARY KEY (id)
 );
 COMMENT ON COLUMN sys_role.id IS '主键';
 COMMENT ON COLUMN sys_role.create_by IS '创建人';

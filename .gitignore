@@ -28,3 +28,4 @@ target/
 /logs/
 /docs/.Soybean/
 /upload/
+/.proxyai/checkpoints/

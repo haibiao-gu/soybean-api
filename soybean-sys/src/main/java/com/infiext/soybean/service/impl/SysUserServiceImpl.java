@@ -18,6 +18,7 @@ import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +41,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Resource
     private SysUserRoleService sysUserRoleService;
 
+    @Resource
+    private PasswordEncoder passwordEncoder;
+
     @Value("${app.default-password}")
     private String defaultPassword;
 
@@ -49,7 +53,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public SysUserPO create(SysUserPO po) {
-        po.setPassword(MD5.create().digestHex16(defaultPassword));
+        po.setPassword(passwordEncoder.encode(defaultPassword));
         validator.validateAll(po);
         po.save();
         if (StrUtil.isNotBlank(po.getRoleCode())) {
@@ -70,7 +74,32 @@ public class SysUserServiceImpl implements SysUserService {
     @Transactional
     @Override
     public void createBatch(List<SysUserPO> list) {
-        list.forEach(this::create);
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        for (SysUserPO po : list) {
+            po.setPassword(passwordEncoder.encode(defaultPassword));
+            validator.validateAll(po);
+        }
+        // 每批 100 条
+        int batchSize = 100;
+        for (int i = 0; i < list.size(); i += batchSize) {
+            int end = Math.min(i + batchSize, list.size());
+            List<SysUserPO> batch = list.subList(i, end);
+            mapper.insertBatch(batch);
+            for (SysUserPO po : batch) {
+                if (StrUtil.isNotBlank(po.getRoleCode())) {
+                    String roleId = SysRolePO.create().select(SYS_ROLE.ID)
+                            .where(SYS_ROLE.ROLE_CODE.eq(po.getRoleCode())).oneAs(String.class);
+                    if (roleId == null) {
+                        throw new BusinessException("角色不存在，请检查角色代码: " + po.getRoleCode());
+                    }
+                    SysUserRolePO roleRelations = SysUserRolePO.create().setRoleId(roleId);
+                    po.setRoles(List.of(roleRelations));
+                }
+                sysUserRoleService.resetUserRole(po.getId(), po.getRoles());
+            }
+        }
     }
 
     /**
@@ -150,12 +179,15 @@ public class SysUserServiceImpl implements SysUserService {
      */
     @Override
     public String getUserId(String phone, String password) {
-        return SysUserPO.create()
-                .select(SYS_USER.ID)
+        SysUserPO user = SysUserPO.create()
+                .select(SYS_USER.ID, SYS_USER.PASSWORD)
                 .where(SYS_USER.USER_PHONE.eq(phone))
-                .and(SYS_USER.PASSWORD.eq(MD5.create().digestHex16(password)))
                 .and(SYS_USER.STATUS.eq(StatusEnum.ENABLED))
-                .oneAs(String.class);
+                .one();
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            return null;
+        }
+        return user.getId();
     }
 
     /**

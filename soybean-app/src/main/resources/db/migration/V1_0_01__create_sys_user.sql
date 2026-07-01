@@ -1,19 +1,20 @@
 DROP TABLE IF EXISTS sys_user;
-CREATE TABLE sys_user(
-                         id VARCHAR(32) NOT NULL,
-                         create_by VARCHAR(32),
-                         create_time TIMESTAMP,
-                         update_by VARCHAR(32),
-                         update_time TIMESTAMP,
-                         del_flag INT4 NOT NULL,
-                         version INT4 NOT NULL,
-                         user_name VARCHAR(50) NOT NULL,
-                         user_phone VARCHAR(64) NOT NULL,
-                         user_email VARCHAR(500),
-                         user_avatar VARCHAR(500),
-                         password VARCHAR(64),
-                         status VARCHAR(10) NOT NULL,
-                         PRIMARY KEY (id)
+CREATE TABLE sys_user
+(
+    id          VARCHAR(32) NOT NULL,
+    create_by   VARCHAR(32),
+    create_time TIMESTAMP,
+    update_by   VARCHAR(32),
+    update_time TIMESTAMP,
+    del_flag    INT4        NOT NULL,
+    version     INT4        NOT NULL,
+    user_name   VARCHAR(50) NOT NULL,
+    user_phone  VARCHAR(64) NOT NULL,
+    user_email  VARCHAR(500),
+    user_avatar VARCHAR(500),
+    password    VARCHAR(64),
+    status      VARCHAR(10) NOT NULL,
+    PRIMARY KEY (id)
 );
 COMMENT ON COLUMN sys_user.id IS '主键';
 COMMENT ON COLUMN sys_user.create_by IS '创建人';
@@ -31,4 +32,4 @@ COMMENT ON COLUMN sys_user.status IS '状态（1-正常，0-停用）';
 COMMENT ON TABLE sys_user IS '用户表';
 
 INSERT INTO sys_user (id, del_flag, "version", user_name, user_phone, "password", status)
-VALUES ('0', 0, 0, '系统管理员', 'admin', '49ba59abbe56e057', '1');
+VALUES ('0', 0, 0, '系统管理员', 'admin', '$2b$12$MaEBmZryQZlCDMqOCXPPq.8F6QXSK3xLYdyPNBBRkUsMRppBGaTVi', '1');

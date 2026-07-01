@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public Result<Void> handleRuntimeException(RuntimeException e) {
         log.error("运行时异常：", e);
-        return Result.error(500, "服务器内部错误：" + e.getMessage());
+        return Result.error(500, "系统异常，请稍后重试");
     }
 
     /**
@@ -76,7 +76,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public Result<Void> handleException(Exception e) {
         log.error("未知异常：", e);
-        return Result.error(500, "服务器未知错误：" + e.getMessage());
+        return Result.error(500, "系统异常，请稍后重试");
     }
 
     // ========== 新增：SA-Token 未登录异常处理 ==========

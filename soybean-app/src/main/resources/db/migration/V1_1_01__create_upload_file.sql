@@ -1,27 +1,28 @@
 DROP TABLE IF EXISTS upload_file;
-CREATE TABLE upload_file(
-                                id VARCHAR(32) NOT NULL,
-                                create_by VARCHAR(32),
-                                create_time TIMESTAMP,
-                                update_by VARCHAR(32),
-                                update_time TIMESTAMP,
-                                del_flag INT4 NOT NULL,
-                                version INT4 NOT NULL,
-                                biz_type VARCHAR(50) NOT NULL,
-                                biz_id VARCHAR(32) NOT NULL,
-                                original_file_name VARCHAR(500),
-                                file_name VARCHAR(50),
-                                file_suffix VARCHAR(50),
-                                mime_type VARCHAR(500) NOT NULL,
-                                file_size VARCHAR(500),
-                                file_md5 VARCHAR(32) NOT NULL,
-                                store_type VARCHAR(50),
-                                bucket_name VARCHAR(50),
-                                file_key VARCHAR(500),
-                                file_path VARCHAR(500),
-                                file_url VARCHAR(500),
-                                status VARCHAR(10),
-                                PRIMARY KEY (id)
+CREATE TABLE upload_file
+(
+    id                 VARCHAR(32)  NOT NULL,
+    create_by          VARCHAR(32),
+    create_time        TIMESTAMP,
+    update_by          VARCHAR(32),
+    update_time        TIMESTAMP,
+    del_flag           INT4         NOT NULL,
+    version            INT4         NOT NULL,
+    biz_type           VARCHAR(50)  NOT NULL,
+    biz_id             VARCHAR(32)  NOT NULL,
+    original_file_name VARCHAR(500),
+    file_name          VARCHAR(50),
+    file_suffix        VARCHAR(50),
+    mime_type          VARCHAR(500) NOT NULL,
+    file_size          VARCHAR(500),
+    file_md5           VARCHAR(32)  NOT NULL,
+    store_type         VARCHAR(50),
+    bucket_name        VARCHAR(50),
+    file_key           VARCHAR(500),
+    file_path          VARCHAR(500),
+    file_url           VARCHAR(500),
+    status             VARCHAR(10),
+    PRIMARY KEY (id)
 );
 COMMENT ON COLUMN upload_file.id IS '主键';
 COMMENT ON COLUMN upload_file.create_by IS '创建人';

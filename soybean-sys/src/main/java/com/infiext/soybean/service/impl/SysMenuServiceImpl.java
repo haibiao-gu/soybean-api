@@ -1,6 +1,5 @@
 package com.infiext.soybean.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.infiext.soybean.domain.SortParam;
@@ -17,6 +16,7 @@ import com.infiext.soybean.validator.sys.menu.SysMenuValidationContext;
 import com.mybatisflex.core.paginate.Page;
 import com.mybatisflex.core.query.QueryWrapper;
 import jakarta.annotation.Resource;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +71,26 @@ public class SysMenuServiceImpl implements SysMenuService {
     @Transactional
     @Override
     public void createBatch(List<SysMenuPO> list) {
-        list.forEach(this::create);
+        // 批量校验 + 自动排序号
+        for (SysMenuPO po : list) {
+            validator.validateAll(po);
+            if (po.getSortOrder() == null) {
+                long count = SysMenuPO.create().where(SYS_MENU.PARENT_ID.eq(po.getParentId())).count();
+                po.setSortOrder((int) (count + 1));
+            }
+        }
+        // 批量插入（每 200 条一批）
+        int batchSize = 200;
+        for (int i = 0; i < list.size(); i += batchSize) {
+            List<SysMenuPO> batch = list.subList(i, Math.min(i + batchSize, list.size()));
+            mapper.insertBatch(batch);
+        }
+        // 批量处理关联关系
+        for (SysMenuPO po : list) {
+            sysMenuQueryService.resetMenuQuery(po.getId(), po.getQuery());
+            sysMenuPermissionService.resetMenuPermissions(po.getId(), po.getPermissions());
+        }
+        updateVersion();
     }
 
     /**
@@ -198,14 +217,15 @@ public class SysMenuServiceImpl implements SysMenuService {
     /**
      * 更新版本
      */
+    @CacheEvict(value = "userRoutes", allEntries = true)
     private List<SysMenuPO> updateVersion() {
         List<SysMenuPO> list = SysMenuPO.create().select(SYS_MENU.DEFAULT_COLUMNS)
                 .where(SYS_MENU.STATUS.eq(StatusEnum.ENABLED))
                 .orderBy(SYS_MENU.SORT_ORDER.asc())
                 .list();
         stringRedisTemplate.opsForValue().set(MENU_LIST_CACHE, JSONUtil.toJsonStr(list));
-        String randomVersion = RandomUtil.randomString(32);
-        stringRedisTemplate.opsForValue().set(MENU_VERSION_CACHE, randomVersion);
+        String version = String.valueOf(System.currentTimeMillis());
+        stringRedisTemplate.opsForValue().set(MENU_VERSION_CACHE, version);
         return list;
     }
 

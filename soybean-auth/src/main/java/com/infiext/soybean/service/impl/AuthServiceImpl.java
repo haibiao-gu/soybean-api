@@ -1,20 +1,22 @@
 package com.infiext.soybean.service.impl;
 
-import cn.hutool.crypto.digest.MD5;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.po.SysUserPO;
 import com.infiext.soybean.service.AuthService;
 import com.infiext.soybean.service.SysUserService;
 import jakarta.annotation.Resource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class AuthServiceImpl implements AuthService {
     @Resource
     private SysUserService sysUserService;
+
+    @Resource
+    private PasswordEncoder passwordEncoder;
 
     /**
      * 获取权限列表
@@ -75,7 +77,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void changePassword(String userId, String oldPassword, String newPassword) {
         SysUserPO sysUser = sysUserService.getById(userId);
-        if (sysUser == null || !Objects.equals(sysUser.getPassword(), MD5.create().digestHex16(oldPassword))) {
+        if (sysUser == null || !passwordEncoder.matches(oldPassword, sysUser.getPassword())) {
             throw new BusinessException("原密码错误！");
         }
         sysUserService.updatePassword(userId, newPassword);

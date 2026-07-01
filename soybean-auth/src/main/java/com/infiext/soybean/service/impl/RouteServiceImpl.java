@@ -11,17 +11,16 @@ import com.infiext.soybean.utils.TreeUtil;
 import com.infiext.soybean.vo.RouteVO;
 import com.infiext.soybean.vo.UserRoleVO;
 import jakarta.annotation.Resource;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
 public class RouteServiceImpl implements RouteService {
-    Map<String, SysMenuPO> menuMap = new HashMap<>();
     @Resource
     private SysMenuService sysMenuService;
     @Resource
@@ -49,6 +48,7 @@ public class RouteServiceImpl implements RouteService {
      * @return 用户路由
      */
     @Override
+    @Cacheable(value = "userRoutes", key = "#userId")
     public UserRoleVO getUserRoutes(String userId) {
         // 获取用户角色ID
         List<String> roleIds = sysUserService.getUserRoleIds(userId);
@@ -56,15 +56,16 @@ public class RouteServiceImpl implements RouteService {
         List<String> menuIds = sysRoleService.getRoleMenuIds(roleIds);
         // 获取菜单缓存数据
         List<SysMenuPO> menuCacheList = sysMenuService.getCachedList();
-        // 转换成菜单Map
-        menuMap = menuCacheList.stream()
-                .collect(Collectors.toMap(SysMenuPO::getId, menu -> menu));
+        // 转换成菜单Map（线程安全）
+        ConcurrentHashMap<String, SysMenuPO> menuMap = new ConcurrentHashMap<>(
+                menuCacheList.stream()
+                        .collect(Collectors.toMap(SysMenuPO::getId, menu -> menu)));
 
         // 用户菜单
         List<SysMenuPO> userMenus = new ArrayList<>();
 
         for (String menuId : menuIds) {
-            pushMenu(userMenus, menuId);
+            pushMenu(userMenus, menuId, menuMap);
         }
 
         List<RouteVO> routes = convertToRoute(userMenus);
@@ -83,12 +84,12 @@ public class RouteServiceImpl implements RouteService {
      * @param menuList 菜单列表
      * @param menuId   菜单ID
      */
-    private void pushMenu(List<SysMenuPO> menuList, String menuId) {
+    private void pushMenu(List<SysMenuPO> menuList, String menuId, ConcurrentHashMap<String, SysMenuPO> menuMap) {
         SysMenuPO menu = menuMap.get(menuId);
         if (menu == null || menu.getConstant().equals(YesOrNoEnum.Y)) return;
         menuList.add(menu);
         if (!menu.getParentId().equals("0")) {
-            pushMenu(menuList, menu.getParentId());
+            pushMenu(menuList, menu.getParentId(), menuMap);
         }
     }
 

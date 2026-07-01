@@ -1,8 +1,9 @@
 DROP TABLE IF EXISTS sys_menu_permission;
-CREATE TABLE sys_menu_permission(
-                                    menu_id VARCHAR(32) NOT NULL,
-                                    key VARCHAR(64) NOT NULL,
-                                    value VARCHAR(50)
+CREATE TABLE sys_menu_permission
+(
+    menu_id VARCHAR(32) NOT NULL,
+    key     VARCHAR(64) NOT NULL,
+    value   VARCHAR(50)
 );
 COMMENT ON COLUMN sys_menu_permission.menu_id IS '菜单ID';
 COMMENT ON COLUMN sys_menu_permission.key IS '权限';

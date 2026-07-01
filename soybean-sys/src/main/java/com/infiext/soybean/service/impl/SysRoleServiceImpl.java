@@ -54,7 +54,21 @@ public class SysRoleServiceImpl implements SysRoleService {
     @Transactional
     @Override
     public void createBatch(List<SysRolePO> list) {
-        list.forEach(this::create);
+        // 批量校验
+        for (SysRolePO po : list) {
+            validator.validateAll(po);
+        }
+        // 批量插入（每 200 条一批）
+        int batchSize = 200;
+        for (int i = 0; i < list.size(); i += batchSize) {
+            List<SysRolePO> batch = list.subList(i, Math.min(i + batchSize, list.size()));
+            mapper.insertBatch(batch);
+        }
+        // 批量处理关联关系
+        for (SysRolePO po : list) {
+            sysRoleMenuService.resetRoleMenus(po.getId(), po.getMenus());
+            sysRolePermissionService.resetRolePermissions(po.getId(), po.getPermissions());
+        }
     }
 
     /**

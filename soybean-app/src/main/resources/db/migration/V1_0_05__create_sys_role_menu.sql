@@ -1,7 +1,8 @@
 DROP TABLE IF EXISTS sys_role_menu;
-CREATE TABLE sys_role_menu(
-                              role_id VARCHAR(32) NOT NULL,
-                              menu_id VARCHAR(32) NOT NULL
+CREATE TABLE sys_role_menu
+(
+    role_id VARCHAR(32) NOT NULL,
+    menu_id VARCHAR(32) NOT NULL
 );
 COMMENT ON COLUMN sys_role_menu.role_id IS '角色ID';
 COMMENT ON COLUMN sys_role_menu.menu_id IS '菜单ID';

@@ -11,7 +11,7 @@ RUN mkdir -p /app
 # 暴露端口
 EXPOSE 8080
 
-ADD /soybean-api-app/target/app.jar ./app.jar
+ADD /soybean-app/target/app.jar ./app.jar
 
 # JVM 参数优化（针对 Java 21）
 ENV JAVA_OPTS="-XX:+UseZGC \

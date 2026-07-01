@@ -1,7 +1,8 @@
 DROP TABLE IF EXISTS sys_role_permission;
-CREATE TABLE sys_role_permission(
-                                   role_id VARCHAR(32) NOT NULL,
-                                   permission_key VARCHAR(64) NOT NULL
+CREATE TABLE sys_role_permission
+(
+    role_id        VARCHAR(32) NOT NULL,
+    permission_key VARCHAR(64) NOT NULL
 );
 COMMENT ON COLUMN sys_role_permission.role_id IS '角色ID';
 COMMENT ON COLUMN sys_role_permission.permission_key IS '权限';
