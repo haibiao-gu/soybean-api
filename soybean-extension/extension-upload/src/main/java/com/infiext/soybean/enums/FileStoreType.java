@@ -16,7 +16,7 @@ public enum FileStoreType {
 
     public static FileStoreType from(String value) {
         if (value == null || value.isBlank()) {
-            return null;
+            throw new IllegalArgumentException("文件存储类型不能为空或空");
         }
         String normalized = value.trim();
         for (FileStoreType type : values()) {
@@ -24,6 +24,6 @@ public enum FileStoreType {
                 return type;
             }
         }
-        return null;
+        throw new IllegalArgumentException("未知的文件存储类型: " + value);
     }
 }

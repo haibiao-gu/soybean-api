@@ -1,15 +1,16 @@
 package com.infiext.soybean.service.impl;
 
 import cn.hutool.core.io.FileUtil;
-import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.enums.FileStoreType;
+import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.model.DownloadStoreRequest;
 import com.infiext.soybean.model.UploadStoreRequest;
 import com.infiext.soybean.model.UploadStoreResult;
 import com.infiext.soybean.service.UploadStoreService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +19,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
-@Component
+@Service
+@ConditionalOnProperty(name = "app.upload-store", havingValue = "LOCAL")
 public class LocalUploadStoreService implements UploadStoreService {
     @Value("${app.local-upload-dir}")
     private String localUploadDir;

@@ -1,7 +1,7 @@
 package com.infiext.soybean.service.impl;
 
-import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.enums.FileStoreType;
+import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.model.DownloadStoreRequest;
 import com.infiext.soybean.model.UploadStoreRequest;
 import com.infiext.soybean.model.UploadStoreResult;
@@ -14,27 +14,45 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-@Component
+@Service
+@ConditionalOnProperty(name = "app.upload-store", havingValue = "MINIO")
 public class MinioUploadStoreService implements UploadStoreService {
-    @Value("${app.minio.endpoint}")
-    private String endpoint;
-    @Value("${app.minio.access-key}")
-    private String accessKey;
-    @Value("${app.minio.secret-key}")
-    private String secretKey;
-    @Value("${app.minio.bucket-name}")
-    private String bucketName;
-    @Value("${app.minio.public-url}")
-    private String publicUrl;
+    private final MinioClient minioClient;
+    private final String endpoint;
+    private final String bucketName;
+    private final String publicUrl;
+
+    public MinioUploadStoreService(@Value("${app.minio.endpoint}") String endpoint,
+                                   @Value("${app.minio.access-key}") String accessKey,
+                                   @Value("${app.minio.secret-key}") String secretKey,
+                                   @Value("${app.minio.bucket-name}") String bucketName,
+                                   @Value("${app.minio.public-url}") String publicUrl) {
+        if (!StringUtils.hasText(endpoint) || !StringUtils.hasText(accessKey) || !StringUtils.hasText(secretKey) || !StringUtils.hasText(bucketName)) {
+            throw new BusinessException("MinIO配置不完整，请检查 endpoint/access-key/secret-key/bucket-name");
+        }
+        this.endpoint = endpoint;
+        this.bucketName = bucketName;
+        this.publicUrl = publicUrl;
+        this.minioClient = buildMinioClient(endpoint, accessKey, secretKey);
+    }
+
+    private MinioClient buildMinioClient(String endpoint,
+                                         String accessKey,
+                                         String secretKey) {
+        return MinioClient.builder()
+                .endpoint(endpoint)
+                .credentials(accessKey, secretKey)
+                .build();
+    }
 
     @Override
     public FileStoreType getStoreType() {
@@ -45,7 +63,6 @@ public class MinioUploadStoreService implements UploadStoreService {
     public UploadStoreResult upload(UploadStoreRequest request) {
         String validatedBucketName = resolveBucketName(null);
         String objectKey = request.getRelativePath().replace("\\", "/");
-        MinioClient minioClient = buildClient();
         try {
             ensureBucket(minioClient, validatedBucketName);
             String contentType = StringUtils.hasText(request.getContentType()) ? request.getContentType() : "application/octet-stream";
@@ -69,7 +86,6 @@ public class MinioUploadStoreService implements UploadStoreService {
 
     @Override
     public void download(DownloadStoreRequest request, HttpServletResponse response) {
-        MinioClient minioClient = buildClient();
         String validatedBucketName = resolveBucketName(request.getBucketName());
         String objectKey = request.getFileKey();
         if (!StringUtils.hasText(objectKey)) {
@@ -87,21 +103,9 @@ public class MinioUploadStoreService implements UploadStoreService {
             response.setHeader("Content-Disposition", "attachment;filename*=UTF-8''" + encodedFileName);
             objectResponse.transferTo(outputStream);
             outputStream.flush();
-        } catch (IOException e) {
-            throw new BusinessException("MinIO文件下载失败：" + e.getMessage());
         } catch (Exception e) {
             throw new BusinessException("MinIO文件下载失败：" + e.getMessage());
         }
-    }
-
-    private MinioClient buildClient() {
-        if (!StringUtils.hasText(endpoint) || !StringUtils.hasText(accessKey) || !StringUtils.hasText(secretKey)) {
-            throw new BusinessException("MinIO配置不完整，请检查 endpoint/access-key/secret-key");
-        }
-        return MinioClient.builder()
-                .endpoint(endpoint)
-                .credentials(accessKey, secretKey)
-                .build();
     }
 
     private void ensureBucket(MinioClient minioClient, String validatedBucketName) throws Exception {

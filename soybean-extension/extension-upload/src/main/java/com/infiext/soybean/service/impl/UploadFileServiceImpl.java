@@ -15,6 +15,7 @@ import com.infiext.soybean.service.UploadStoreFactory;
 import com.infiext.soybean.utils.FileUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@Slf4j
 @Service
 public class UploadFileServiceImpl implements UploadFileService {
     @Resource
@@ -38,12 +40,13 @@ public class UploadFileServiceImpl implements UploadFileService {
      */
     @Transactional
     @Override
-    public UploadFilePO uploadFile(MultipartFile file, String bizType, String bizId) {
-        if (file == null || file.isEmpty()) {
-            throw new BusinessException("上传文件不能为空");
-        }
-
+    public UploadFilePO uploadFile(MultipartFile file, String bizType, String bizId) throws IOException {
         try {
+            if (file == null || file.isEmpty()) {
+                log.error("上传文件为空");
+                throw new BusinessException("上传文件不能为空");
+            }
+
             String originalFileName = file.getOriginalFilename();
             if (originalFileName == null || originalFileName.isEmpty()) {
                 throw new BusinessException("文件名不能为空");
@@ -88,8 +91,10 @@ public class UploadFileServiceImpl implements UploadFileService {
 
             filePO.save();
 
+            log.info("文件 {} 上传成功，ID: {}", originalFileName, filePO.getId());
             return filePO;
-        } catch (IOException e) {
+        } catch (Exception e) {
+            log.error("文件上传失败", e);
             throw new BusinessException("文件上传失败：" + e.getMessage());
         }
     }

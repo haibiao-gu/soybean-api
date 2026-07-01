@@ -19,6 +19,16 @@ server:
   servlet:
     context-path: /api # 上下文路径（可选）
 
+# ======== 管理端点配置 ==========
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
 # ========== Spring核心配置 ==========
 spring:
   application:
@@ -112,7 +122,7 @@ sa-token:
   # token风格（默认uuid，可选：simple-uuid、random-32、random-64、random-128、tik）
   token-style: tik
   is-log: ${TOKEN_LOG}
-  
+
 # ========== 请求排除配置 ==========
 request:
   exclude:

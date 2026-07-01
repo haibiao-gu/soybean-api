@@ -5,9 +5,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 public interface UploadFileService {
     @Transactional
-    UploadFilePO uploadFile(MultipartFile file, String bizType, String bizId);
+    UploadFilePO uploadFile(MultipartFile file, String bizType, String bizId) throws IOException;
 
     void downloadFile(String fileId, HttpServletResponse response);
 }

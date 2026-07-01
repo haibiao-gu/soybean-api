@@ -7,9 +7,10 @@ import com.infiext.soybean.model.MailSendRequest;
 import com.infiext.soybean.po.UploadFilePO;
 import com.infiext.soybean.service.MailService;
 import com.infiext.soybean.service.UploadFileService;
-import lombok.extern.slf4j.Slf4j;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class TestController {
     @PostMapping("/upload/file")
     public UploadFilePO uploadFile(@RequestParam("file") MultipartFile file,
                                    @RequestParam(defaultValue = "test") String bizType,
-                                   @RequestParam(defaultValue = "test") String bizId) {
+                                   @RequestParam(defaultValue = "test") String bizId) throws IOException {
         return uploadFileService.uploadFile(file, bizType, bizId);
     }
 
