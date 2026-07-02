@@ -58,6 +58,4 @@ COMMENT ON TABLE sys_menu IS '系统菜单';
 INSERT INTO sys_menu (id, del_flag, "version", status, parent_id, menu_type, menu_name, route_name, route_path, component, icon, icon_type, keep_alive, constant, sort_order, hide_in_menu, multi_tab)
 VALUES ('1', 0, 0, '1', '0', '2', '首页', 'home', '/home', 'layout.base$view.home', 'mdi:monitor-dashboard', '1', 1, 0, 1, 0, 0),
        ('2', 0, 0, '1', '0', '1', '系统设定', 'system', '/system', 'layout.base', 'carbon:cloud-service-management', '1', 0, 0, 5, 0, 0),
-       ('2-1', 0, 0, '1', '2', '2', '用户管理', 'system_user', '/system/user', 'view.system_user', 'ic:round-manage-accounts', '1', 1, 0, 1, 0, 0),
-       ('2-2', 0, 0, '1', '2', '2', '菜单管理', 'system_menu', '/system/menu', 'view.system_menu', 'material-symbols:route', '1', 1, 0, 2, 0, 0),
-       ('2-3', 0, 0, '1', '2', '2', '角色管理', 'system_role', '/system/role', 'view.system_role', 'carbon:user-role', '1', 1, 0, 3, 0, 0);
+       ('2-2', 0, 0, '1', '2', '2', '菜单管理', 'system_menu', '/system/menu', 'view.system_menu', 'material-symbols:route', '1', 1, 0, 2, 0, 0);

@@ -3,6 +3,7 @@ package com.infiext.soybean.service.impl;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.MD5;
+import com.infiext.soybean.enums.ConfigGroupEnum;
 import com.infiext.soybean.enums.FileStatusEnum;
 import com.infiext.soybean.enums.FileStoreType;
 import com.infiext.soybean.exception.BusinessException;
@@ -10,18 +11,16 @@ import com.infiext.soybean.model.DownloadStoreRequest;
 import com.infiext.soybean.model.UploadStoreRequest;
 import com.infiext.soybean.model.UploadStoreResult;
 import com.infiext.soybean.po.UploadFilePO;
+import com.infiext.soybean.service.SysConfigService;
 import com.infiext.soybean.service.UploadFileService;
 import com.infiext.soybean.service.UploadStoreFactory;
 import com.infiext.soybean.utils.FileUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 @Slf4j
 @Service
@@ -29,18 +28,12 @@ public class UploadFileServiceImpl implements UploadFileService {
     @Resource
     private UploadStoreFactory uploadStoreFactory;
 
-    @Value("${app.upload-store}")
-    private String uploadStore;
+    @Resource
+    private SysConfigService sysConfigService;
 
-    /**
-     * 上传文件
-     *
-     * @param file 文件
-     * @return 文件信息
-     */
     @Transactional
     @Override
-    public UploadFilePO uploadFile(MultipartFile file, String bizType, String bizId) throws IOException {
+    public UploadFilePO uploadFile(MultipartFile file, String bizType, String bizId) {
         try {
             if (file == null || file.isEmpty()) {
                 log.error("上传文件为空");
@@ -99,12 +92,6 @@ public class UploadFileServiceImpl implements UploadFileService {
         }
     }
 
-    /**
-     * 下载文件
-     *
-     * @param fileId   文件ID
-     * @param response HTTP响应对象
-     */
     @Override
     public void downloadFile(String fileId, HttpServletResponse response) {
         UploadFilePO filePO = UploadFilePO.create().setId(fileId).oneById();
@@ -123,11 +110,7 @@ public class UploadFileServiceImpl implements UploadFileService {
     }
 
     private FileStoreType resolveUploadStoreType() {
-        FileStoreType storeType = FileStoreType.from(uploadStore);
-        if (storeType == null) {
-            throw new BusinessException("默认上传存储类型不支持：" + uploadStore);
-        }
-        return storeType;
+        String uploadStore = sysConfigService.getConfigValue(ConfigGroupEnum.UPLOAD, "store_type");
+        return FileStoreType.from(uploadStore);
     }
-
 }

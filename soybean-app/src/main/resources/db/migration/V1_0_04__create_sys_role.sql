@@ -27,3 +27,14 @@ COMMENT ON TABLE sys_role IS '系统角色';
 
 INSERT INTO sys_role (id, del_flag, "version", role_name, role_code)
 VALUES ('0', 0, 0, '系统管理员', 'ADMIN');
+
+INSERT INTO sys_menu (id, del_flag, "version", status, parent_id, menu_type, menu_name, route_name, route_path, component, icon, icon_type, keep_alive, constant, sort_order, hide_in_menu, multi_tab)
+VALUES ('2-3', 0, 0, '1', '2', '2', '角色管理', 'system_role', '/system/role', 'view.system_role', 'carbon:user-role', '1', 1, 0, 3, 0, 0);
+
+INSERT INTO sys_menu_permission (menu_id, "key", value)
+VALUES ('2-3', 'sys:role:add', '新增'),
+       ('2-3', 'sys:role:delete', '删除'),
+       ('2-3', 'sys:role:edit', '编辑'),
+       ('2-3', 'sys:role:list', '列表'),
+       ('2-3', 'sys:role:export', '导出'),
+       ('2-3', 'sys:role:import', '导入');

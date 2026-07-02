@@ -11,11 +11,12 @@ import com.infiext.soybean.utils.TreeUtil;
 import com.infiext.soybean.vo.RouteVO;
 import com.infiext.soybean.vo.UserRoleVO;
 import jakarta.annotation.Resource;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -48,7 +49,7 @@ public class RouteServiceImpl implements RouteService {
      * @return 用户路由
      */
     @Override
-    @Cacheable(value = "userRoutes", key = "#userId")
+//    @Cacheable(value = "userRoutes", key = "#userId")
     public UserRoleVO getUserRoutes(String userId) {
         // 获取用户角色ID
         List<String> roleIds = sysUserService.getUserRoleIds(userId);
@@ -61,12 +62,14 @@ public class RouteServiceImpl implements RouteService {
                 menuCacheList.stream()
                         .collect(Collectors.toMap(SysMenuPO::getId, menu -> menu)));
 
-        // 用户菜单
-        List<SysMenuPO> userMenus = new ArrayList<>();
+        // 用户菜单（Set 去重，LinkedHashSet 保持顺序）
+        Set<SysMenuPO> userMenuSet = new LinkedHashSet<>();
 
         for (String menuId : menuIds) {
-            pushMenu(userMenus, menuId, menuMap);
+            pushMenu(userMenuSet, menuId, menuMap);
         }
+
+        List<SysMenuPO> userMenus = new ArrayList<>(userMenuSet);
 
         List<RouteVO> routes = convertToRoute(userMenus);
 
@@ -81,15 +84,16 @@ public class RouteServiceImpl implements RouteService {
     /**
      * 添加菜单
      *
-     * @param menuList 菜单列表
-     * @param menuId   菜单ID
+     * @param menuSet 菜单集合
+     * @param menuId  菜单ID
+     * @param menuMap 菜单映射
      */
-    private void pushMenu(List<SysMenuPO> menuList, String menuId, ConcurrentHashMap<String, SysMenuPO> menuMap) {
+    private void pushMenu(Set<SysMenuPO> menuSet, String menuId, ConcurrentHashMap<String, SysMenuPO> menuMap) {
         SysMenuPO menu = menuMap.get(menuId);
         if (menu == null || menu.getConstant().equals(YesOrNoEnum.Y)) return;
-        menuList.add(menu);
+        menuSet.add(menu);
         if (!menu.getParentId().equals("0")) {
-            pushMenu(menuList, menu.getParentId(), menuMap);
+            pushMenu(menuSet, menu.getParentId(), menuMap);
         }
     }
 

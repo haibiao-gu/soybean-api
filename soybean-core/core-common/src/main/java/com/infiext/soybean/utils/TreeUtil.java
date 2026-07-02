@@ -131,8 +131,11 @@ public class TreeUtil {
         }
         //根据parentId进行分组
         Map<String, List<T>> mapList = list.stream().collect(Collectors.groupingBy(o -> getFieldValue(o, parentIdName).toString()));
-        //给每个节点设置子节点列表
-        list.forEach(node -> setFieldValue(node, mapList.get(getFieldValue(node, idName).toString()), childrenName));
+        //给每个节点设置子节点列表，无子节点时设空列表
+        list.forEach(node -> {
+            List<T> children = mapList.get(getFieldValue(node, idName).toString());
+            setFieldValue(node, children != null ? children : new ArrayList<>(), childrenName);
+        });
         return list.stream().filter(o -> topParentIdVal.equals(getFieldValue(o, parentIdName))).collect(Collectors.toList());
     }
 

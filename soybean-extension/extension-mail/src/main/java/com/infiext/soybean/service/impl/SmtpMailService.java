@@ -1,17 +1,18 @@
 package com.infiext.soybean.service.impl;
 
+import com.infiext.soybean.enums.ConfigGroupEnum;
 import com.infiext.soybean.enums.SendStatusEnum;
 import com.infiext.soybean.enums.YesOrNoEnum;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.model.MailSendRequest;
-import com.infiext.soybean.service.MailService;
 import com.infiext.soybean.po.MailSendLogPO;
+import com.infiext.soybean.service.MailService;
+import com.infiext.soybean.service.SysConfigService;
 import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -20,22 +21,29 @@ import org.springframework.util.StringUtils;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Service
 public class SmtpMailService implements MailService {
     @Resource
-    private JavaMailSender mailSender;
-
-    @Value("${app.mail.from:}")
-    private String defaultFrom;
+    private SysConfigService sysConfigService;
 
     @Override
     public void send(MailSendRequest request) {
         validateRequest(request);
+
+        String host = sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "host");
+        if (!StringUtils.hasText(host)) {
+            throw new BusinessException("请先在系统管理中配置邮箱信息");
+        }
+
+        JavaMailSenderImpl mailSender = buildMailSender();
+        String defaultFrom = sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "from");
+
         String sender = StringUtils.hasText(request.getFrom()) ? request.getFrom() : defaultFrom;
         if (!StringUtils.hasText(sender)) {
-            throw new BusinessException("邮件发件人不能为空，请配置 app.mail.from 或在请求中指定 from");
+            throw new BusinessException("邮件发件人不能为空，请配置发件人地址或在请求中指定 from");
         }
         String[] toAddresses = toArray(request.getTo());
         if (toAddresses.length == 0) {
@@ -62,6 +70,21 @@ public class SmtpMailService implements MailService {
             updateLogFailure(logPO, e.getMessage());
             throw new BusinessException("发送邮件失败：" + e.getMessage());
         }
+    }
+
+    private JavaMailSenderImpl buildMailSender() {
+        JavaMailSenderImpl sender = new JavaMailSenderImpl();
+        sender.setHost(sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "host"));
+        sender.setPort(Integer.parseInt(sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "port")));
+        sender.setUsername(sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "username"));
+        sender.setPassword(sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "password"));
+        sender.setProtocol("smtp");
+        sender.setDefaultEncoding("UTF-8");
+
+        Properties props = sender.getJavaMailProperties();
+        props.put("mail.smtp.auth", sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "smtp_auth"));
+        props.put("mail.smtp.starttls.enable", sysConfigService.getConfigValue(ConfigGroupEnum.MAIL, "starttls_enable"));
+        return sender;
     }
 
     private void validateRequest(MailSendRequest request) {

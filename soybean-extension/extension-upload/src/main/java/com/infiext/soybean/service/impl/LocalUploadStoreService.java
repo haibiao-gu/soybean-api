@@ -1,16 +1,18 @@
 package com.infiext.soybean.service.impl;
 
 import cn.hutool.core.io.FileUtil;
+import com.infiext.soybean.enums.ConfigGroupEnum;
 import com.infiext.soybean.enums.FileStoreType;
 import com.infiext.soybean.exception.BusinessException;
 import com.infiext.soybean.model.DownloadStoreRequest;
 import com.infiext.soybean.model.UploadStoreRequest;
 import com.infiext.soybean.model.UploadStoreResult;
+import com.infiext.soybean.service.SysConfigService;
 import com.infiext.soybean.service.UploadStoreService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,10 +22,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
 @Service
-@ConditionalOnProperty(name = "app.upload-store", havingValue = "LOCAL")
 public class LocalUploadStoreService implements UploadStoreService {
-    @Value("${app.local-upload-dir}")
-    private String localUploadDir;
+    @Resource
+    private SysConfigService sysConfigService;
 
     @Override
     public FileStoreType getStoreType() {
@@ -32,6 +33,10 @@ public class LocalUploadStoreService implements UploadStoreService {
 
     @Override
     public UploadStoreResult upload(UploadStoreRequest request) {
+        String localUploadDir = sysConfigService.getConfigValue(ConfigGroupEnum.UPLOAD, "local_dir");
+        if (!StringUtils.hasText(localUploadDir)) {
+            throw new BusinessException("请先配置本地上传目录");
+        }
         String fullPath = localUploadDir + File.separator + request.getRelativePath();
         File destFile = new File(fullPath);
         File parentDir = destFile.getParentFile();

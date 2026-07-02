@@ -11,6 +11,5 @@ COMMENT ON TABLE sys_role_menu IS '角色菜单关联表';
 INSERT INTO sys_role_menu (role_id, menu_id)
 VALUES ('0', '1'),
        ('0', '2'),
-       ('0', '2-1'),
        ('0', '2-2'),
        ('0', '2-3');

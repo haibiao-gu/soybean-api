@@ -1,5 +1,6 @@
 package com.infiext.soybean.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,7 +9,9 @@ import java.util.List;
 @Data
 public class RouteVO implements Serializable {
     private static final long serialVersionUID = 1L;
+    @JsonIgnore
     private String id;
+    @JsonIgnore
     private String parentId;
     private String name;
     private String path;
