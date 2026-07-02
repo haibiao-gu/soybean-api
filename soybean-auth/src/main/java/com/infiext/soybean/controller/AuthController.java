@@ -28,6 +28,14 @@ public class AuthController {
     @Resource
     private AuthService authService;
 
+    /**
+     * 获取用户盐值（登录/改密前调用，无需登录）
+     */
+    @PostMapping("/salt")
+    public String getSalt(@RequestParam String userName) {
+        return authService.getSalt(userName);
+    }
+
     @PostMapping("/login")
     public LoginVO loginVO(@Validated @RequestBody LoginDTO dto) {
         String userId = authService.login(dto.getUserName(), dto.getPassword());

@@ -8,10 +8,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.HexFormat;
 
 @Configuration
 public class SecurityConfig {
+
+    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -32,5 +35,14 @@ public class SecurityConfig {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 algorithm not available", e);
         }
+    }
+
+    /**
+     * 生成 32 位十六进制随机盐值（16 字节）
+     */
+    public static String generateSalt() {
+        byte[] bytes = new byte[16];
+        SECURE_RANDOM.nextBytes(bytes);
+        return HexFormat.of().formatHex(bytes);
     }
 }

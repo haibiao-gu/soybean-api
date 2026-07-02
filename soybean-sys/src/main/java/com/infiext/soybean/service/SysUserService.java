@@ -32,5 +32,7 @@ public interface SysUserService {
 
     List<String> getPermissionList(String userId);
 
+    SysUserPO getByPhone(String phone);
+
     void updatePassword(String userId, String password);
 }

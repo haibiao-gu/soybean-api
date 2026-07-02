@@ -53,7 +53,9 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     @Transactional
     public SysUserPO create(SysUserPO po) {
-        po.setPassword(passwordEncoder.encode(SecurityConfig.sha256(defaultPassword)));
+        String salt = SecurityConfig.generateSalt();
+        po.setSalt(salt);
+        po.setPassword(passwordEncoder.encode(SecurityConfig.sha256(defaultPassword + salt)));
         validator.validateAll(po);
         po.save();
         if (StrUtil.isNotBlank(po.getRoleCode())) {
@@ -78,7 +80,9 @@ public class SysUserServiceImpl implements SysUserService {
             return;
         }
         for (SysUserPO po : list) {
-            po.setPassword(passwordEncoder.encode(SecurityConfig.sha256(defaultPassword)));
+            String salt = SecurityConfig.generateSalt();
+            po.setSalt(salt);
+            po.setPassword(passwordEncoder.encode(SecurityConfig.sha256(defaultPassword + salt)));
             validator.validateAll(po);
         }
         // 每批 100 条
@@ -174,7 +178,7 @@ public class SysUserServiceImpl implements SysUserService {
      * 获取用户 ID
      *
      * @param phone    手机号码
-     * @param password 密码
+     * @param password SHA-256(password + salt) 前端已加盐哈希的结果
      * @return 用户 ID
      */
     @Override
@@ -187,16 +191,8 @@ public class SysUserServiceImpl implements SysUserService {
         if (user == null) {
             return null;
         }
-        // 新格式：SHA-256 后 BCrypt 比对
-        String hashedInput = SecurityConfig.sha256(password);
-        if (passwordEncoder.matches(hashedInput, user.getPassword())) {
-            return user.getId();
-        }
-        // 兼容旧格式：直接 BCrypt 比对（存量密码）
+        // password is SHA-256(password + salt) from frontend, BCrypt compare directly
         if (passwordEncoder.matches(password, user.getPassword())) {
-            // 迁移为新格式
-            String newHash = passwordEncoder.encode(hashedInput);
-            SysUserPO.create().setPassword(newHash).setId(user.getId()).updateById();
             return user.getId();
         }
         return null;
@@ -250,12 +246,23 @@ public class SysUserServiceImpl implements SysUserService {
      * 修改密码
      *
      * @param userId   用户ID
-     * @param password 密码
+     * @param password SHA-256(newPassword + salt) 前端已加盐哈希的结果
      */
     @Override
     public void updatePassword(String userId, String password) {
         SysUserPO userPO = SysUserPO.create().setId(userId).oneById();
-        userPO.setPassword(passwordEncoder.encode(SecurityConfig.sha256(password)));
+        userPO.setPassword(passwordEncoder.encode(password));
         userPO.updateById();
+    }
+
+    /**
+     * 根据手机号码获取用户（含盐值）
+     */
+    @Override
+    public SysUserPO getByPhone(String phone) {
+        return SysUserPO.create()
+                .select(SYS_USER.ID, SYS_USER.SALT)
+                .where(SYS_USER.USER_PHONE.eq(phone))
+                .one();
     }
 }

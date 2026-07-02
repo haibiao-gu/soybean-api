@@ -2,10 +2,12 @@ package com.infiext.soybean.vo;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
-public class RouteVO {
+public class RouteVO implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String id;
     private String parentId;
     private String name;
@@ -15,7 +17,8 @@ public class RouteVO {
     private List<RouteVO> children;
 
     @Data
-    public static class Meta {
+    public static class Meta implements Serializable {
+        private static final long serialVersionUID = 1L;
         private String title;
         private String icon;
         private String iconType;

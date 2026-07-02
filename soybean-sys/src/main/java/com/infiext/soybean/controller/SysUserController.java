@@ -1,6 +1,7 @@
 package com.infiext.soybean.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import com.infiext.soybean.config.SecurityConfig;
 import com.infiext.soybean.domain.SortParam;
 import com.infiext.soybean.handler.ParamHandler;
 import com.infiext.soybean.po.SysUserPO;
@@ -118,6 +119,8 @@ public class SysUserController {
     @SaCheckPermission("sys:user:edit")
     @PostMapping("/changePassword")
     public void changePassword(@RequestBody SysUserPO po) {
-        service.updatePassword(po.getId(), po.getPassword());
+        SysUserPO user = service.getById(po.getId());
+        String passwordHash = SecurityConfig.sha256(po.getPassword() + user.getSalt());
+        service.updatePassword(po.getId(), passwordHash);
     }
 }

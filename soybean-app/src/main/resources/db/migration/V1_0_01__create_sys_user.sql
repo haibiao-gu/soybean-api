@@ -13,6 +13,7 @@ CREATE TABLE sys_user
     user_email  VARCHAR(500),
     user_avatar VARCHAR(500),
     password    VARCHAR(64),
+    salt    VARCHAR(32),
     status      VARCHAR(10) NOT NULL,
     PRIMARY KEY (id)
 );
@@ -28,8 +29,9 @@ COMMENT ON COLUMN sys_user.user_phone IS '用户手机号码';
 COMMENT ON COLUMN sys_user.user_email IS '用户电子邮箱';
 COMMENT ON COLUMN sys_user.user_avatar IS '用户头像';
 COMMENT ON COLUMN sys_user.password IS '登录密码';
+COMMENT ON COLUMN sys_user.salt IS '密码盐值';
 COMMENT ON COLUMN sys_user.status IS '状态（1-正常，0-停用）';
 COMMENT ON TABLE sys_user IS '用户表';
 
-INSERT INTO sys_user (id, del_flag, "version", user_name, user_phone, "password", status)
-VALUES ('0', 0, 0, '系统管理员', 'admin', '$2b$12$MaEBmZryQZlCDMqOCXPPq.8F6QXSK3xLYdyPNBBRkUsMRppBGaTVi', '1');
+INSERT INTO sys_user (id, del_flag, "version", user_name, user_phone, "password", salt, status)
+VALUES ('0', 0, 0, '系统管理员', 'admin', '$2b$12$YDaKJS5EVltPi2RSR7yW6ed9zIOJvaa/0zo44dhk5FLObFEeXv1Lq', 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6', '1');

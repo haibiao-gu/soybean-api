@@ -28,4 +28,5 @@ VALUES ('2-2', 'sys:menu:add', '新增'),
        ('2-1', 'sys:user:edit', '编辑'),
        ('2-1', 'sys:user:list', '列表'),
        ('2-1', 'sys:user:export', '导出'),
-       ('2-1', 'sys:user:import', '导入');
+       ('2-1', 'sys:user:import', '导入'),
+       ('2-1', 'sys:user:resetPassword', '重置密码');

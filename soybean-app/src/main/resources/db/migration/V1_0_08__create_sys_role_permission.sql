@@ -26,4 +26,5 @@ VALUES ('0', 'sys:menu:add'),
        ('0', 'sys:user:edit'),
        ('0', 'sys:user:list'),
        ('0', 'sys:user:export'),
-       ('0', 'sys:user:import');
+       ('0', 'sys:user:import'),
+       ('0', 'sys:user:resetPassword');

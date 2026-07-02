@@ -9,9 +9,11 @@ public interface AuthService {
 
     List<String> getRoleList(String userId, String loginType);
 
-    String login(String username, String password);
+    String login(String username, String passwordHash);
 
     SysUserPO getUserInfo(String userId);
 
-    void changePassword(String userId, String oldPassword, String newPassword);
+    String getSalt(String userName);
+
+    void changePassword(String userId, String oldPasswordHash, String newPasswordHash);
 }

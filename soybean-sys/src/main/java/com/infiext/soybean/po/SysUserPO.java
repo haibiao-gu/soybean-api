@@ -49,7 +49,13 @@ public class SysUserPO extends BasePO<SysUserPO> {
     private String userAvatar;
 
     /**
-     * 登录密码
+     * 密码盐值（32位十六进制随机字符串）
+     */
+    @Column(value = "salt")
+    private String salt;
+
+    /**
+     * 登录密码（BCrypt(SHA-256(password + salt))）
      */
     @Column(value = "password")
     private String password;
