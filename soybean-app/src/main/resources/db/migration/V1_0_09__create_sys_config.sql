@@ -8,10 +8,10 @@ CREATE TABLE sys_config
     update_time  TIMESTAMP,
     del_flag     INT4         NOT NULL,
     version      INT4         NOT NULL,
-    config_group VARCHAR(50)  NOT NULL,
-    config_key   VARCHAR(100) NOT NULL,
+    config_group VARCHAR(64)  NOT NULL,
+    config_key   VARCHAR(64) NOT NULL,
     config_value TEXT,
-    description  VARCHAR(200),
+    description  VARCHAR(500),
     PRIMARY KEY (id)
 );
 COMMENT ON COLUMN sys_config.id IS '主键';

@@ -16,7 +16,7 @@ CREATE TABLE upload_file
     mime_type          VARCHAR(500) NOT NULL,
     file_size          VARCHAR(500),
     file_md5           VARCHAR(32)  NOT NULL,
-    store_type         VARCHAR(50),
+    store_type         VARCHAR(10),
     bucket_name        VARCHAR(50),
     file_key           VARCHAR(500),
     file_path          VARCHAR(500),
