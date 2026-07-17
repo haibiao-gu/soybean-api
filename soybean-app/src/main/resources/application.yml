@@ -45,8 +45,8 @@ spring:
   # ========== 数据库配置 ==========
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource # 数据源类型为 Druid
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://${DATASOURCE_URL}
+    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME}
+    url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
     # Druid连接池配置（正确层级：spring -> datasource -> druid）
